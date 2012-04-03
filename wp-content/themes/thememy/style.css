@@ -1,0 +1,60 @@
+/*
+Theme Name: ThemeMY!
+Theme URI: http://thememy.com/
+Author: ThemeMY!
+Author URI: http://thememy.com/
+Description: Theme for the site ThemeMY!
+Version: 0.1
+License: GNU General Public License
+License URI: license.txt
+Tags:
+
+This theme, like WordPress, is licensed under the GPL.
+*/
+
+body {
+  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+body.home {
+	background-image: url(images/bg.png);
+	padding-top: 0;
+}
+.dark-b {
+	padding-top: 50px;
+}
+.dark-b .titlebar {
+	color: #3c3c3c !important;
+	top: 80px !important;
+	background: none !important;
+	text-shadow: none;
+}
+.dark-b .site {
+	background: url(images/bg_form.png) no-repeat !important;
+	border: none !important;
+	color: #3c3c3c !important;
+	width: 452px !important;
+	padding: 38px 20px 40px !important;
+	text-shadow: none;
+}
+.dark-b .site h2 {
+	color: #fff;
+	text-shadow: 1px 1px 0 #000;
+}
+.dark-b .site h3 {
+	padding-top: 20px;
+}
+.dark-b .site form {
+	text-align: center;
+}
+.dark-b .site form input[type=text] {
+	margin: 0 4px 0 0 !important;
+	float: none !important;
+}
+.dark-b .site .site-powered-by {
+	padding: 18px 0 0;
+}
+.dark-b .submit {
+	margin-bottom: 0;
+	padding: 0;
+}

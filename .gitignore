@@ -1,4 +1,5 @@
 .DS_Store
 local-config.php
 .htaccess
+wp-content/uploads/*
 

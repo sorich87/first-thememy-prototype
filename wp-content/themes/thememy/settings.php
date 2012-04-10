@@ -116,6 +116,15 @@ get_header(); ?>
 					<fieldset>
 						<legend><?php _e( 'Payments' ); ?></legend>
 						<div class="control-group">
+							<label class="control-label" for="test-mode"><?php _e( 'Test Mode' ); ?></label>
+							<div class="controls">
+								<label class="checkbox">
+									<input<?php if ( isset( $settings['test-mode'] ) ) checked( $settings['test-mode'], 'yes' ); ?> type="checkbox" id="test-mode" name="test-mode" value="yes">
+									<?php _e( 'Use this when testing the purchase links. If checked, real payments will not be processed.' ); ?>
+								</label>
+							</div>
+						</div>
+						<div class="control-group">
 							<label class="control-label" for="paypal-email"><?php _e( 'Paypal Email' ); ?></label>
 							<div class="controls">
 								<input value="<?php echo isset( $settings['paypal-email'] ) ? $settings['paypal-email'] : ''; ?>" type="text" class="input-xlarge" id="paypal-email" name="paypal-email">

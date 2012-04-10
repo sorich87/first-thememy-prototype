@@ -20,9 +20,15 @@ get_header(); ?>
 		</div>
 	<?php endif; ?>
 
-	<?php if ( get_user_meta( $current_user_id, 'thememy_settings' ) == false ) : ?>
+	<?php $settings = get_user_meta( $current_user_id, 'thememy_settings', true ); ?>
+
+	<?php if ( ! $settings ) : ?>
 		<div class="alert alert-error">
 			<?php printf( __( 'Please fill in your <a href="%s">store settings</a> or the purchase links will not work.' ), site_url( 'settings/' ) ); ?>
+		</div>
+	<?php elseif ( ! empty( $settings['test-mode'] ) ) : ?>
+		<div class="alert alert-error">
+			<?php printf( __( 'Your store is in test mode. Real payments will not be processed. Please uncheck the test mode field on your <a href="%s">store settings page</a> if you want to start receiving payments from your customers.' ), site_url( 'settings/' ) ); ?>
 		</div>
 	<?php endif; ?>
 

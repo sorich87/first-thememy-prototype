@@ -235,7 +235,13 @@ function thememy_redirect_to_paypal() {
 	if ( empty( $settings ) )
 		thememy_error( json_encode( array( 'seller' => $theme->post_author, 'error' => 10001 ) ) );
 
-	$paypal_url = 'https://svcs.sandbox.paypal.com/AdaptivePayments/Pay';
+	if ( empty( $settings['test-mode'] ) )
+		$paypal_host = 'paypal.com';
+	else
+		$paypal_host = 'sandbox.paypal.com';
+
+	$api_endpoint = "https://svcs.{$paypal_host}/AdaptivePayments/Pay";
+
 	$args = array(
 		'item_number' => $theme->ID,
 	);
@@ -272,7 +278,7 @@ function thememy_redirect_to_paypal() {
 		) )
 	);
 
-	$response = wp_remote_retrieve_body( wp_remote_post( $paypal_url, $args ) );
+	$response = wp_remote_retrieve_body( wp_remote_post( $api_endpoint, $args ) );
 
 	if ( is_wp_error( $response ) )
 		thememy_error( $response );
@@ -282,7 +288,7 @@ function thememy_redirect_to_paypal() {
 	if ( empty( $result->payKey ) )
 		thememy_error( $response );
 
-	wp_redirect( add_query_arg( 'paykey', $result->payKey, 'https://www.sandbox.paypal.com/webapps/adaptivepayment/flow/pay' ) );
+	wp_redirect( add_query_arg( 'paykey', $result->payKey, "https://www.{$paypal_host}/webapps/adaptivepayment/flow/pay" ) );
 	exit;
 }
 add_action( 'template_redirect', 'thememy_redirect_to_paypal' );

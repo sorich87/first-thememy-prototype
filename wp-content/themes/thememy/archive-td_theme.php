@@ -75,10 +75,12 @@ get_header(); ?>
 
 		</ul>
 
+<?php /*
 		<div>
 			<h3><?php _e( 'Global Purchase Link' ); ?></h3>
 			<pre><?php td_global_purchase_link(); ?></pre>
-		</div>
+			</div>
+*/ ?>
 
 	<?php elseif ( current_user_can( 'edit_posts' ) ) : ?>
 

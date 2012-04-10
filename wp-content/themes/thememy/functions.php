@@ -158,7 +158,7 @@ function thememy_restrict_pages() {
 		}
 
 	} else {
-		if ( ! is_front_page() || ! is_page_template( 'store-page.php' ) ) {
+		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}
@@ -243,10 +243,6 @@ function thememy_redirect_to_paypal() {
 	$api_endpoint = "https://svcs.{$paypal_host}/AdaptivePayments/Pay";
 
 	$args = array(
-		'item_number' => $theme->ID,
-	);
-
-	$args = array(
 		'headers' => array(
 			'X-PAYPAL-SECURITY-USERID'      => 'sorich_1322676683_biz_api1.gmail.com',
 			'X-PAYPAL-SECURITY-PASSWORD'    => '1322676719',
@@ -278,15 +274,17 @@ function thememy_redirect_to_paypal() {
 		) )
 	);
 
-	$response = wp_remote_retrieve_body( wp_remote_post( $api_endpoint, $args ) );
+	$response = wp_remote_post( $api_endpoint, $args );
 
 	if ( is_wp_error( $response ) )
 		thememy_error( $response );
 
-	$result = json_decode( $response );
+	$result = json_decode( wp_remote_retrieve_body( $response ) );
 
 	if ( empty( $result->payKey ) )
 		thememy_error( $response );
+
+	thememy_create_order( $result->payKey, $theme->ID );
 
 	wp_redirect( add_query_arg( 'paykey', $result->payKey, "https://www.{$paypal_host}/webapps/adaptivepayment/flow/pay" ) );
 	exit;
@@ -294,14 +292,237 @@ function thememy_redirect_to_paypal() {
 add_action( 'template_redirect', 'thememy_redirect_to_paypal' );
 
 /**
+ * Register order post type
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_register_post_type() {
+	$args = array(
+		'labels' => array(
+			'name' => __( 'Orders' ),
+			'singular_name' => __( 'Order' )
+		),
+		'public' => false,
+		'map_meta_cap' => true
+	);
+	register_post_type( 'thememy_order', $args );
+
+	$args = array(
+		'labels' => array(
+			'name' => __( 'Logs' ),
+			'singular_name' => __( 'Log' )
+		),
+		'public' => false
+	);
+	register_post_type( 'thememy_log', $args );
+}
+add_action( 'init', 'thememy_register_post_type' );
+
+/**
+ * Create a new order
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int|string $item_id Theme ID or package ID
+ * @param string $paykey Paypal payKey
+ * @param string $type theme or package
+ */
+function thememy_create_order( $paykey, $item_id, $type = 'theme' ) {
+	$args = array(
+		'post_type'   => 'thememy_order',
+		'post_author' => 1,
+		'post_title'  => sprintf( __( 'Purchase %s' ), md5( $paykey ) )
+	);
+	$order_id = wp_insert_post( $args );
+
+	if ( ! $order_id )
+		return 0;
+
+	$theme = get_post( $item_id );
+	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
+
+	update_post_meta( $order_id, '_thememy_item', $item_id );
+	update_post_meta( $order_id, '_thememy_amount', $settings['price-one'] );
+	update_post_meta( $order_id, '_thememy_email', $settings['paypal-email'] );
+	update_post_meta( $order_id, '_thememy_paykey', $paykey );
+	update_post_meta( $order_id, '_thememy_type', $type );
+
+	return $order_id;
+}
+
+/**
+ * Get order by paykey
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param string $paykey Paypal payKey
+ * @param string Order status
+ */
+function thememy_get_order( $paykey, $status = array( 'publish', 'draft' ) ) {
+	$args = array(
+		'post_type'   => 'thememy_order',
+		'post_status' => $status,
+		'meta_key'    => '_thememy_paykey',
+		'meta_value'  => $paykey
+	);
+	$result = get_posts( $args );
+
+	if ( $result )
+		return $result[0];
+}
+
+/**
+ * Process order
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_process_order() {
+	if ( ! isset( $_POST['transaction_type'] ) )
+		return;
+
+	$data = stripslashes_deep( $_POST );
+
+	if ( 'Adaptive Payment PAY' != $data['transaction_type'] || 'COMPLETED' != $data['status'] )
+		return;
+
+	// Check that the order has not been previously processed
+	$order = thememy_get_order( $data['paykey'], 'draft' );
+	if ( ! $order )
+		return;
+
+	// Add 'cmd' and post back to PayPal to validate
+
+	$data['cmd'] = '_notify-validate';
+
+	if ( empty( $settings['test-mode'] ) )
+		$paypal_host = 'paypal.com';
+	else
+		$paypal_host = 'sandbox.paypal.com';
+
+	$response = wp_remote_post( "ssl://www.{$paypal_host}", array( 'body' => $data ) );
+
+	if ( is_wp_error( $response ) )
+		thememy_error( $response, false );
+
+	$result = wp_remote_retrieve_body( $response );
+
+	// Process result
+
+	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
+		$amount = get_post_meta( $order->ID, '_thememy_amount', true );
+		$email = get_post_meta( $order->ID, '_thememy_email', true );
+		$transaction = $data['transaction'][0];
+
+		// Check that receiver email is the author PayPal email and payment amount is correct
+		if ( $email != $transaction.receiver || $amount != $transaction.amount )
+			thememy_error( $response, false );
+
+		$order->post_status = 'publish';
+		wp_update_post( $order );
+		update_post_meta( $order->ID, '_thememy_transaction', $transaction );
+
+		thememy_assign_theme( $data['sender_email'], $theme->ID );
+		thememy_send_download_email( $data['sender_email'], $order->ID );
+
+	} elseif ( strcmp( $results, 'INVALID' ) == 0 ) {
+		thememy_error( $response, false );
+	}
+}
+add_action( 'init', 'thememy_process_order' );
+
+/**
+ * Assign theme to a buyer profile
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param string $email Buyer email
+ * @param int $theme_id Theme ID
+ */
+function thememy_assign_theme( $email, $theme_id ) {
+	$buyer_id = get_user_by( 'email', $email )->ID;
+
+	if ( ! $buyer_id )
+		$buyer_id = wp_create_user( wp_hash( $email ), wp_generate_password(), $email );
+
+	$themes = get_user_meta( $buyer_id, '_thememy_themes' );
+
+	if ( ! in_array( $theme_id, $themes ) )
+		update_user_meta( $buyer_id, '_thememy_themes', $theme_id );
+}
+
+/**
+ * Send theme download email to a buyer
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param string $email Buyer email
+ * @param int $order_id Order ID
+ */
+function thememy_send_download_email( $email, $order_id ) {
+	$theme = get_post( $theme_id );
+	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
+
+	$args = array(
+		'order' => $order_id,
+		'key'   => wp_hash( $email )
+	);
+	$download_link = add_query_arg( $args, td_get_download_link( $theme->ID ) );
+	$install_link = add_query_arg( $args, site_url( 'install' ) );
+
+	$headers = array(
+		"From: {$settings['business-email']}"
+	);
+
+	$subject = __( 'Here is your new theme' );
+
+	$message = sprintf( __( 'Thanks for your purchase.
+
+You have ordered the theme %1$s and your payment has been received.
+
+You can now download your theme from:
+%2$s
+
+Alternatively you can request it to be installed for you on your website:
+%3$s
+
+If you need assistance, please feel free to email %4$s
+
+Sincerely,
+%5$s
+%6$s' ),
+		$theme->post_title,
+		$download_link,
+		$install_link,
+		$settings['business-email'],
+		$settings['business-name'],
+		$settings['home-page']
+	);
+
+	wp_mail( $email, $subject, $message, $headers );
+}
+
+/**
  * Display error message and log error
  *
  * @since ThemeMY! 0.1
  *
  * @param mixed $data Data to log
+ * @param bool $die Whether to display error message or not
  */
-function thememy_error( $data ) {
-	wp_die( __( '<h1>OMG! We broke something!</h1> <p>We have been notified and will fix it ASAP. We apologize for the inconvenience.<br /> <b>Please try again later.</b></p>' ) );
+function thememy_error( $data, $die = true ) {
+	if ( is_array( $data ) )
+		json_encode( $data );
+
+	$args = array(
+		'post_type'    => 'thememy_log',
+		'post_author'  => 1,
+		'post_title'   => md5( $data ),
+		'post_content' => $data
+	);
+	wp_insert_post( $args );
+
+	if ( $die )
+		wp_die( __( '<h1>OMG! We broke something!</h1> <p>We have been notified and will fix it ASAP. We apologize for the inconvenience.<br /> <b>Please try again later.</b></p>' ) );
 }
 
 /**

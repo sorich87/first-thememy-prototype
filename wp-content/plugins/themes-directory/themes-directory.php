@@ -118,6 +118,7 @@ class Themes_Directory {
 			'has_archive'  => true,
 			'labels'       => $labels,
 			'public'       => true,
+			'map_meta_cap' => true,
 			'rewrite'      => array( 'slug' => 'themes' ),
 			'show_in_menu' => false,
 			'supports'     => array(

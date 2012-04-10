@@ -234,8 +234,19 @@ class TD_Admin {
 	 * @param array $theme_data Theme data from style.css
 	 * @return int Theme page ID
 	 */
-	public static function save_theme_data( $theme_data ) {
-		if ( $page = get_page_by_title( $theme_data['Name'], OBJECT, 'td_theme' ) ) {
+	public static function save_theme_data( $theme_data, $author_id = null ) {
+		global $wpdb;
+
+		if ( ! $author_id )
+			$author_id = get_current_user_id();
+
+		$theme_id = $wpdb->get_var( $wpdb->prepare(
+			"SELECT ID FROM $wpdb->posts WHERE post_author = %d AND post_type= 'td_theme' AND post_title = %s",
+			$author_id,
+			$theme_data['Name']
+		) );
+
+		if ( $page = get_page( $theme_id ) ) {
 			$args = array(
 				'ID'           => $page->ID,
 				'post_excerpt' => $theme_data['Description']

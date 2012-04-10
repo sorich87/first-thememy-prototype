@@ -17,12 +17,12 @@ get_header(); ?>
 		 * @since ThemeMY! 0.1
 		 */
 		function thememy_settings_shortcode( $atts ) {
-			if ( empty( $_GET['store'] ) )
-				return;
-
 			extract( shortcode_atts( array(
 				'name' => ''
 			), $atts ) );
+
+			if ( empty( $_GET['store'] ) )
+				return "[$name]";
 
 			$settings = get_user_meta( $_GET['store'], 'thememy_settings', true );
 

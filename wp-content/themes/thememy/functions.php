@@ -158,7 +158,7 @@ function thememy_restrict_pages() {
 		}
 
 	} else {
-		if ( ! is_front_page() ) {
+		if ( ! is_front_page() || ! is_page_template( 'store-page.php' ) ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}

@@ -56,6 +56,10 @@
 <meta property="og:image" content="null" />
 <meta property="og:description" content="I just signed up to ThemeMY! and will be able to setup my own WordPress theme marketplace in minutes. Check it out now! (Seats are limited)" />
 
+<?php if ( is_page_template( 'store-page.php' ) ) : ?>
+<meta name="robots" content="noindex, nofollow" />
+<?php endif; ?>
+
 <?php wp_head(); ?>
 
 <script type="text/javascript">
@@ -76,12 +80,14 @@
 
 	<body <?php body_class(); ?>>
 
-    <?php do_action( 'before' ); ?>
+		<?php do_action( 'before' ); ?>
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+		<?php if ( ! is_page_template( 'store-page.php' ) ) : ?>
+
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
 					<?php if ( is_user_logged_in() ) : ?>
 					<ul class="nav">
 						<li<?php if ( is_post_type_archive( 'td_theme' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'themes/' ); ?>"><?php _e( 'Themes' ); ?></a></li>
@@ -100,10 +106,12 @@
 						<input type="hidden" name="redirect_to" value="<?php echo esc_url( site_url( 'themes/' ) ); ?>" />
 					</form>
 					<?php endif; ?>
-        </div>
-      </div>
-    </div>
+				</div>
+			</div>
+		</div>
 
-<?php if ( ! is_front_page() ) : ?>
-    <div class="container">
-<?php endif; ?>
+		<?php endif; ?>
+
+		<?php if ( ! is_front_page() ) : ?>
+		<div class="container">
+		<?php endif; ?>

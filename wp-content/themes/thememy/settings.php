@@ -38,12 +38,12 @@ get_header(); ?>
 	<form class="form-horizontal" method="post">
 		<div class="tabbable">
 			<ul class="nav nav-tabs">
-			<li class="active"><a href="#tab-1" data-toggle="tab"><?php _e( 'General' ); ?></a></li>
-				<li><a href="#tab-2" data-toggle="tab"><?php _e( 'Prices' ); ?></a></li>
-				<li><a href="#tab-3" data-toggle="tab"><?php _e( 'Payments' ); ?></a></li>
+			<li class="active"><a href="#tab-general" data-toggle="tab"><?php _e( 'General' ); ?></a></li>
+				<li><a href="#tab-pricing" data-toggle="tab"><?php _e( 'Pricing' ); ?></a></li>
+				<li><a href="#tab-payment" data-toggle="tab"><?php _e( 'Payment' ); ?></a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane active" id="tab-1">
+				<div class="tab-pane active" id="tab-general">
 					<fieldset>
 						<legend><?php _e( 'General' ); ?></legend>
 						<div class="control-group">
@@ -88,9 +88,9 @@ get_header(); ?>
 					</fieldset>
 				</div>
 
-				<div class="tab-pane" id="tab-2">
+				<div class="tab-pane" id="tab-pricing">
 					<fieldset>
-						<legend><?php _e( 'Prices' ); ?></legend>
+						<legend><?php _e( 'Pricing' ); ?></legend>
 						<div class="control-group">
 							<label class="control-label" for="price-one"><?php _e( 'For one theme' ); ?></label>
 							<div class="controls">
@@ -112,9 +112,9 @@ get_header(); ?>
 					</fieldset>
 				</div>
 
-				<div class="tab-pane" id="tab-3">
+				<div class="tab-pane" id="tab-payment">
 					<fieldset>
-						<legend><?php _e( 'Payments' ); ?></legend>
+						<legend><?php _e( 'Payment' ); ?></legend>
 						<div class="control-group">
 							<label class="control-label" for="test-mode"><?php _e( 'Test Mode' ); ?></label>
 							<div class="controls">

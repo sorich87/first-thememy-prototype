@@ -16,7 +16,7 @@ get_header(); ?>
 		$settings['return-page'] = site_url( "order-confirmation/?store=$current_user_id" );
 
 	if ( empty( $settings['cancel-page'] ) )
-		$settings['cancel-page'] = site_url( "order-cancellation/?store=$current_user_id" );
+		$settings['cancel-page'] = site_url( "order-cancelled/?store=$current_user_id" );
 	?>
 
 	<div class="page-header">

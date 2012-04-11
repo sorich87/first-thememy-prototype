@@ -337,7 +337,7 @@ function thememy_create_order( $paykey, $item_id, $type = 'theme' ) {
 	$args = array(
 		'post_type'   => 'thememy_order',
 		'post_author' => $theme->post_author,
-		'post_title'  => sprintf( __( 'Purchase %s' ), md5( $paykey ) )
+		'post_title'  => sprintf( __( 'Purchase %s' ), wp_hash( $paykey ) )
 	);
 	$order_id = wp_insert_post( $args );
 
@@ -553,7 +553,7 @@ function thememy_error( $data, $die = true ) {
 	$args = array(
 		'post_type'    => 'thememy_log',
 		'post_author'  => 1,
-		'post_title'   => md5( $data ),
+		'post_title'   => wp_hash( $data ),
 		'post_content' => $data
 	);
 	wp_insert_post( $args );

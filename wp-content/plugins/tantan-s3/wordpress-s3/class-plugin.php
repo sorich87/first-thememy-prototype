@@ -205,18 +205,18 @@ class TanTanWordPressS3Plugin extends TanTanWordPressS3PluginPublic {
 					);
 
 					$this->s3->putObjectStream($this->options['bucket'], $prefix.$filethumb['name'], $filethumb);
-				} elseif (count($data['sizes'])) foreach ($data['sizes'] as $altName => $altSize) {
-					$altPath = str_replace( basename( $data['file'] ), $altSize['file'], $data['file'] );
-					$altMeta = array(
-						'name' => $altSize['file'],
-						'type' => $type,
-						'tmp_name' => $altPath,
-						'size' => filesize($altPath),
-					);
-					$this->s3->putObjectStream($this->options['bucket'], $prefix.$altMeta['name'], $altMeta);
-
+				} elseif ( ! empty( $data['sizes'] ) ) {
+					foreach ($data['sizes'] as $altName => $altSize) {
+						$altPath = str_replace( basename( $data['file'] ), $altSize['file'], $data['file'] );
+						$altMeta = array(
+							'name' => $altSize['file'],
+							'type' => $type,
+							'tmp_name' => $altPath,
+							'size' => filesize($altPath),
+						);
+						$this->s3->putObjectStream($this->options['bucket'], $prefix.$altMeta['name'], $altMeta);
+					}
 				}
-
 
 				delete_post_meta($postID, 'amazonS3_info');
 				add_post_meta($postID, 'amazonS3_info', array(

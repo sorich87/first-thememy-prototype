@@ -12,7 +12,7 @@ class TanTanWordPressS3Plugin extends TanTanWordPressS3PluginPublic {
 		if (!file_exists(dirname(__FILE__).'/config.php')) {
 			add_action('admin_menu', array(&$this, 'settings'));
 		}
-		if (!$this->options['hideAmazonS3UploadTab']) {
+		if ( empty( $this->options['hideAmazonS3UploadTab'] ) ) {
 			add_action('load-upload.php', array(&$this, 'addPhotosTab')); // WP < 2.5
 
 			// WP >= 2.5
@@ -20,7 +20,7 @@ class TanTanWordPressS3Plugin extends TanTanWordPressS3PluginPublic {
 			add_action('media_upload_tantan-wordpress-s3', array(&$this, 'media_upload_content'));
 		}
 		add_action('activate_tantan/wordpress-s3.php', array(&$this, 'activate'));
-		if ($_GET['tantanActivate'] == 'wordpress-s3') {
+		if ( isset( $_GET['tantanActivate'] ) && 'wordpress-s3' == $_GET['tantanActivate'] ) {
 			$this->showConfigNotice();
 		}
 		$this->photos = array();
@@ -47,12 +47,12 @@ class TanTanWordPressS3Plugin extends TanTanWordPressS3PluginPublic {
 		}
 
 	function settings() {
-		add_options_page('Amazon S3', 'Amazon S3', 10, __FILE__, array(&$this, 'admin'));
+		add_options_page( __( 'Amazon S3' ), __( 'Amazon S3' ), 'manage_options', __FILE__, array( $this, 'admin' ) );
 		$this->version_check();
 	}
 	function addhooks() {
 		parent::addhooks();
-		if (!$_POST['disable_amazonS3']) {
+		if ( empty( $_POST['disable_amazonS3'] ) ) {
 			add_filter('wp_update_attachment_metadata', array(&$this, 'wp_update_attachment_metadata'), 9, 2);
 			//can't delete mirrored files just yet
 			//add_filter('wp_get_attachment_metadata', array(&$this, 'wp_get_attachment_metadata'));
@@ -67,7 +67,7 @@ class TanTanWordPressS3Plugin extends TanTanWordPressS3PluginPublic {
 		}
 	}
 	function admin() {
-		if ($_POST['action'] == 'save') {
+		if ( isset( $_POST['action'] ) && 'save' == $_POST['action'] ) {
 			if (!is_array($_POST['options'])) $_POST['options'] = array();
 			$options = get_option('tantan_wordpress_s3');
 

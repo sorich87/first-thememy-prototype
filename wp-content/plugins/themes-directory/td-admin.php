@@ -308,6 +308,13 @@ class TD_Admin {
 
 		update_post_meta( $attachment_id, '_td_version', $theme_data['Version'] );
 
+		// Make file private on s3
+		if ( $amazon = get_post_meta( $attachment_id, 'amazonS3_info', true ) ) {
+			$s3_config = get_option( 'tantan_wordpress_s3' );
+			$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
+			$s3->setObjectACL( $amazon['bucket'], $amazon['key'], 'authenticated-read' );
+		}
+
 		return $attachment_id;
 	}
 

@@ -120,7 +120,7 @@ get_header(); ?>
 							<div class="controls">
 								<label class="checkbox">
 									<input<?php if ( isset( $settings['test-mode'] ) ) checked( $settings['test-mode'], 'yes' ); ?> type="checkbox" id="test-mode" name="test-mode" value="yes">
-									<?php _e( 'Use this when testing the purchase links. If checked, real payments will not be processed.' ); ?>
+									<?php _e( 'Use this with a <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_testing_SBTestAccounts">Paypal test account</a> to test the purchase links. Real payments will not be processed.' ); ?>
 								</label>
 							</div>
 						</div>

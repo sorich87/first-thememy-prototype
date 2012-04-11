@@ -301,6 +301,11 @@ class TD_Admin {
 		);
 		$attachment_id = wp_insert_attachment( $args, $file['file'], $theme_id );
 
+		if ( is_wp_error( $attachment_id ) )
+			return;
+
+		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file ) );
+
 		update_post_meta( $attachment_id, '_td_version', $theme_data['Version'] );
 
 		return $attachment_id;

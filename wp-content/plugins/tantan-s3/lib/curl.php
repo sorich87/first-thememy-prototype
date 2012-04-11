@@ -123,10 +123,6 @@ class TanTanHTTPRequestCurl {
 
 			//curl_setopt($this->curl, CURLOPT_HTTPGET, true);
 			//$this->url .= '?'.$postVars;
-
-
-		} else {
-			curl_setopt($this->curl, CURLOPT_HTTPGET, true);
 		}
 		curl_setopt($this->curl, CURLOPT_URL, $this->url);
 		curl_setopt($this->curl, CURLOPT_FOLLOWLOCATION, false);

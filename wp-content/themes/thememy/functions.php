@@ -112,6 +112,9 @@ function thememy_scripts() {
 
 	wp_enqueue_script( 'small-menu', get_template_directory_uri() . '/js/small-menu.js', 'jquery', '20120206', true );
 
+	if ( is_page_template( 'reports.php' ) )
+		wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
+
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
@@ -328,18 +331,18 @@ add_action( 'init', 'thememy_register_post_type' );
  * @param string $type theme or package
  */
 function thememy_create_order( $paykey, $item_id, $type = 'theme' ) {
+	$theme = get_post( $item_id );
+	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
+
 	$args = array(
 		'post_type'   => 'thememy_order',
-		'post_author' => 1,
+		'post_author' => $theme->post_author,
 		'post_title'  => sprintf( __( 'Purchase %s' ), md5( $paykey ) )
 	);
 	$order_id = wp_insert_post( $args );
 
 	if ( ! $order_id )
 		return 0;
-
-	$theme = get_post( $item_id );
-	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
 
 	update_post_meta( $order_id, '_thememy_item', $item_id );
 	update_post_meta( $order_id, '_thememy_amount', $settings['price-one'] );
@@ -369,6 +372,40 @@ function thememy_get_order( $paykey, $status = array( 'publish', 'draft' ) ) {
 
 	if ( $result )
 		return $result[0];
+}
+
+/**
+ * Get orders grouped by date
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $author_id Theme author ID
+ */
+function thememy_count_orders( $author_id = null ) {
+	global $wpdb;
+
+	if ( empty( $author_id ) )
+		$author_id = get_current_user_id();
+
+	$counts = $wpdb->get_results( $wpdb->prepare(
+		"SELECT DATE(post_date) AS date, COUNT(ID) AS count FROM $wpdb->posts WHERE post_author = %d AND post_type = 'thememy_order' and post_status = 'publish' GROUP BY date",
+		$author_id
+	), OBJECT_K );
+
+	if ( ! $counts )
+		return;
+
+	$start = strtotime( '-30 days' );
+	$today = time();
+	$days = array();
+	for ( $i = 0; $i <= 30; $i++ ) {
+		$timestamp = $start + 3600 * 24 * $i;
+		$day = date( 'Y-m-d', $timestamp );
+		$count = isset( $counts[$day] ) ? (int) $counts[$day]->count : 0;
+		$days[] = array( date( 'd', $timestamp ), $count );
+	}
+
+	return $days;
 }
 
 /**

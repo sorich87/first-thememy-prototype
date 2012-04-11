@@ -55,6 +55,12 @@ class TanTanHTTPRequestCurl {
 	}
 
 	function setMethod($method) {
+		if ( ! defined( 'HTTP_REQUEST_METHOD_PUT' ) )
+			define( 'HTTP_REQUEST_METHOD_PUT', 'PUT' );
+
+		if ( ! defined( 'HTTP_REQUEST_METHOD_POST' ) )
+			define( 'HTTP_REQUEST_METHOD_POST', 'POST' );
+
 		switch ($method) {
 		case 'DELETE':
 			curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'DELETE');

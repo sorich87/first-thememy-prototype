@@ -1,8 +1,9 @@
-<?php if ($error):?>
-<div id="message" class="error fade"><p><strong><?php echo $error?></strong></p></div>
-<?php elseif ($message):?>
-<div id="message" class="updated fade"><p><strong><?php echo $message?></strong></p></div>
+<?php if ( ! empty( $error ) ) :?>
+<div id="message" class="error fade"><p><strong><?php echo $error; ?></strong></p></div>
+<?php elseif ( ! empty( $message ) ) :?>
+<div id="message" class="updated fade"><p><strong><?php echo $message; ?></strong></p></div>
 <?php endif;?>
+
 <script type="text/javascript">
 	function s3_selectBucket(obj) {
 		if (obj.options[obj.selectedIndex].value == 'new') {
@@ -118,7 +119,7 @@
 					<td><input type="text" name="options[secret]" value="<?php echo ($options['secret'] ? '-- not shown --' : '');?>" size="50" /><br />
 						<small><a href="http://aws-portal.amazon.com/gp/aws/developer/account/index.html/?ie=UTF8&action=access-key">Login to Amazon.com to retrieve your Secret Key &gt;</a></small></td> 
 				</tr>
-				<?php if (!$buckets):?>
+				<?php if ( empty( $buckets ) ):?>
 				<tr valign="top">
 					<td colspan="2">
 						<p class="submit">

@@ -134,7 +134,7 @@
 						<select name="options[bucket]" size="1" onchange="return s3_selectBucket(this)">
 							<option value="">Please select a bucket...</option>
 							<?php if (is_array($buckets)) foreach ($buckets as $bucket):?>
-							<option value="<?php echo $bucket?>" <?php echo ($bucket == $options['bucket'] ? 'selected="selected"' : '')?>>&nbsp; &nbsp; <?php echo $bucket?></option>
+							<option value="<?php echo $bucket?>"<?php if ( isset( $options['bucket'] ) ) selected( $bucket, $options['bucket'] ); ?>>&nbsp; &nbsp; <?php echo $bucket?></option>
 							<?php endforeach;?>
 							<option></option>
 							<option value="new">Create a new bucket...</option>
@@ -145,7 +145,7 @@
 				<tr valign="top">
 					<th width="33%" scope="row">Host name settings:</th> 
 					<td>
-						<input type="checkbox" name="options[virtual-host]" value="1" id="virtual-host" <?php echo ($options['virtual-host'] ? 'checked="checked" ' : '');?> />
+						<input type="checkbox" name="options[virtual-host]" value="1" id="virtual-host" <?php echo ( ! empty( $options['virtual-host'] ) ? 'checked="checked" ' : '');?> />
 						<label for="virtual-host"> Bucket is setup for virtual hosting.</label> (<a href="http://docs.amazonwebservices.com/AmazonS3/2006-03-01/VirtualHosting.html">more info</a>)
 					</td> 
 				</tr>
@@ -153,7 +153,7 @@
 				<tr valign="top">
 					<th width="33%" scope="row">File Uploads:</th> 
 					<td>
-						<input type="checkbox" name="options[wp-uploads]" value="1" id="wp-uploads" <?php echo ($options['wp-uploads'] ? 'checked="checked" ' : '');?> />
+						<input type="checkbox" name="options[wp-uploads]" value="1" id="wp-uploads" <?php echo ( ! empty( $options['wp-uploads'] ) ? 'checked="checked" ' : '');?> />
 						<label for="wp-uploads"> Use Amazon S3 for storage when uploading via WordPress' upload tab.</label>
 						<br /><small>Note: Uncheck this to revert back to using your own web host for storage at anytime.</small>
 					</td> 
@@ -162,7 +162,7 @@
 				<tr valign="top">
 					<th width="33%" scope="row">Expires Header:</th> 
 					<td>
-						<input type="checkbox" name="options[expires]" value="315360000" id="expires" <?php echo ($options['expires']? 'checked="checked" ' : '');?> />
+						<input type="checkbox" name="options[expires]" value="315360000" id="expires" <?php echo ( ! empty( $options['expires'] ) ? 'checked="checked" ' : '');?> />
 						<label for="expires"> Set a <a href="http://developer.yahoo.com/performance/rules.html#expires" target="_blank">far future HTTP expiration header</a> for uploaded files <em>(recommended)</em>.</label>
 					</td> 
 				</tr>
@@ -170,7 +170,7 @@
 				<tr valign="top">
 					<th width="33%" scope="row">File Permissions:</th> 
 					<td>
-						<input type="checkbox" name="options[permissions]" value="public" id="permissions" <?php echo ($options['permissions']=='public' ? 'checked="checked" ' : '');?> />
+						<input type="checkbox" name="options[permissions]" value="public" id="permissions"<?php if ( isset( $options['permissions'] ) ) checked( 'public', $options['permissions'] ); ?> />
 						<label for="permissions"> Make sure all files in the selected bucket are publicly accessible.</label>
 					</td> 
 				</tr>

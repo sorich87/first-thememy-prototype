@@ -8,8 +8,6 @@
 
 get_header(); ?>
 
-	<?php $current_user_id = get_current_user_id(); ?>
-
 	<div class="page-header">
 		<h1><?php _e( 'Your Themes' ); ?></h1>
 	</div>
@@ -20,7 +18,7 @@ get_header(); ?>
 		</div>
 	<?php endif; ?>
 
-	<?php $settings = get_user_meta( $current_user_id, 'thememy_settings', true ); ?>
+	<?php $settings = thememy_get_settings(); ?>
 
 	<?php if ( ! $settings ) : ?>
 		<div class="alert alert-error">

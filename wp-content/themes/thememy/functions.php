@@ -216,12 +216,26 @@ function thememy_save_settings() {
 
 	$user_id = get_current_user_id();
 
-	update_user_meta( $user_id, 'thememy_settings', $data );
+	update_user_meta( $user_id, '_thememy_settings', $data );
 
 	wp_redirect( site_url( 'settings/?message=1' ) );
 	exit;
 }
 add_action( 'template_redirect', 'thememy_save_settings' );
+
+/**
+ * Get settings array
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $author_id Author ID
+ */
+function thememy_get_settings( $author_id = null ) {
+	if ( ! $author_id )
+		$author_id = get_current_user_id();
+
+	return get_user_meta( $author_id, '_thememy_settings', true );
+}
 
 /**
  * Redirect to paypal for purchase
@@ -233,7 +247,7 @@ function thememy_redirect_to_paypal() {
 		return;
 
 	$theme = get_post( $_GET['buy'] );
-	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
+	$settings = thememy_get_settings( $theme->post_author );
 	
 	if ( empty( $settings ) )
 		thememy_error( json_encode( array( 'seller' => $theme->post_author, 'error' => 10001 ) ) );
@@ -332,7 +346,7 @@ add_action( 'init', 'thememy_register_post_type' );
  */
 function thememy_create_order( $paykey, $item_id, $type = 'theme' ) {
 	$theme = get_post( $item_id );
-	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
+	$settings = thememy_get_settings( $theme->post_author );
 
 	$args = array(
 		'post_type'   => 'thememy_order',
@@ -484,7 +498,7 @@ function thememy_assign_theme( $email, $theme_id ) {
 	$themes = get_user_meta( $buyer_id, '_thememy_themes' );
 
 	if ( ! in_array( $theme_id, $themes ) )
-		update_user_meta( $buyer_id, '_thememy_themes', $theme_id );
+		add_user_meta( $buyer_id, '_thememy_themes', $theme_id );
 }
 
 /**
@@ -497,7 +511,7 @@ function thememy_assign_theme( $email, $theme_id ) {
  */
 function thememy_send_download_email( $email, $order_id ) {
 	$theme = get_post( $theme_id );
-	$settings = get_user_meta( $theme->post_author, 'thememy_settings', true );
+	$settings = thememy_get_settings( $theme->post_author );
 
 	$args = array(
 		'order' => $order_id,

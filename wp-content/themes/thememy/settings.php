@@ -10,7 +10,7 @@ get_header(); ?>
 
 	<?php
 	$current_user_id = get_current_user_id();
-	$settings = get_user_meta( $current_user_id, 'thememy_settings', true );
+	$settings = thememy_get_settings();
 
 	if ( empty( $settings['return-page'] ) )
 		$settings['return-page'] = site_url( "order-confirmation/?store=$current_user_id" );

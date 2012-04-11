@@ -24,7 +24,7 @@ get_header(); ?>
 			if ( empty( $_GET['store'] ) )
 				return "[$name]";
 
-			$settings = get_user_meta( $_GET['store'], 'thememy_settings', true );
+			$settings = thememy_get_settings( $_GET['store'] );
 
 			if ( isset( $settings[$name] ) )
 				return $settings[$name];

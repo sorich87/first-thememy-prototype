@@ -433,15 +433,21 @@ function thememy_process_order() {
 	if ( ! isset( $_POST['transaction_type'] ) )
 		return;
 
+	thememy_error( __( 'IPN - received' ) . json_encode( $data ), false );
+
 	$data = stripslashes_deep( $_POST );
 
 	if ( 'Adaptive Payment PAY' != $data['transaction_type'] || 'COMPLETED' != $data['status'] )
 		return;
 
-	// Check that the order has not been previously processed
+	thememy_error( __( 'IPN - "COMPLETED" received' ), false );
+
+	// Check that the order has not yet been processed
 	$order = thememy_get_order( $data['paykey'] );
 	if ( $order )
 		return;
+
+	thememy_error( __( 'IPN - Not yet processed' ), false );
 
 	// Add 'cmd' and post back to PayPal to validate
 
@@ -457,8 +463,10 @@ function thememy_process_order() {
 
 	$response = wp_remote_post( "https://www.{$paypal_host}", array( 'body' => $data ) );
 
-	if ( is_wp_error( $response ) )
+	if ( is_wp_error( $response ) ) {
 		thememy_error( $response, false );
+		return;
+	}
 
 	$result = wp_remote_retrieve_body( $response );
 
@@ -468,8 +476,10 @@ function thememy_process_order() {
 		$transaction = $data['transaction'][0];
 
 		// Check that receiver email is the author PayPal email and payment amount is correct
-		if ( $settings['paypal-email'] != $transaction.receiver || $settings['price-one'] != $transaction.amount )
+		if ( $settings['paypal-email'] != $transaction.receiver || $settings['price-one'] != $transaction.amount ) {
 			thememy_error( $response, false );
+			return;
+		}
 
 		$order_id = thememy_create_order( $data, $theme->ID );
 

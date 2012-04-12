@@ -452,7 +452,7 @@ function thememy_process_order() {
 	else
 		$paypal_host = 'sandbox.paypal.com';
 
-	$response = wp_remote_post( "ssl://www.{$paypal_host}", array( 'body' => $data ) );
+	$response = wp_remote_post( "https://www.{$paypal_host}", array( 'body' => $data ) );
 
 	if ( is_wp_error( $response ) )
 		thememy_error( $response, false );
@@ -717,7 +717,7 @@ function thememy_install_request() {
 		return;
 
 	$to = get_option( 'admin_email' );
-	$subject = __( 'Theme Instalation Request' );
+	$subject = __( 'Theme Installation Request' );
 	$message = json_encode( stripslashes_deep( $_POST ) );
 
 	wp_email( $to, $subject, $message );

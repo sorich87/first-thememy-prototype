@@ -609,8 +609,7 @@ Sincerely,
  * @param bool $die Whether to display error message or not
  */
 function thememy_error( $data, $die = true ) {
-	if ( is_array( $data ) )
-		json_encode( $data );
+  $data = json_encode( $data );
 
 	$args = array(
 		'post_type'    => 'thememy_log',

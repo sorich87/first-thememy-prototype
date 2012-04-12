@@ -564,40 +564,32 @@ add_action( 'wp_get_attachment_url', 'thememy_get_attachment_url', 10, 2 );
  * @param int $order_id Order ID
  */
 function thememy_send_download_email( $email, $order_id ) {
-	$theme = get_post( $theme_id );
-	$settings = thememy_get_settings( $theme->post_author );
+	$order = get_post( $order_id );
+	$settings = thememy_get_settings( $order->post_author );
 
 	$args = array(
-		'order' => $order_id,
+		'order' => $order->ID,
 		'key'   => wp_hash( $email )
 	);
-	$download_link = add_query_arg( $args, td_get_download_link( $theme->ID ) );
-	$install_link = add_query_arg( $args, site_url( 'install' ) );
+	$download_page = add_query_arg( $args, site_url( 'download/' ) );
 
 	$headers = array(
 		"From: {$settings['business-email']}"
 	);
 
-	$subject = __( 'Here is your new theme' );
+	$subject = __( 'Download your new theme' );
 
-	$message = sprintf( __( 'Thanks for your purchase.
+	$message = sprintf( __( 'Thanks for your purchase. Your payment has been received.
 
-You have ordered the theme %1$s and your payment has been received.
+To download your theme, go to:
+%1$s
 
-You can now download your theme from:
-%2$s
-
-Alternatively you can request it to be installed for you on your website:
-%3$s
-
-If you need assistance, please feel free to email %4$s
+If you need assistance, please feel free to email %2$s.
 
 Sincerely,
-%5$s
-%6$s' ),
-		$theme->post_title,
-		$download_link,
-		$install_link,
+%3$s
+%4$s' ),
+		$download_page,
 		$settings['business-email'],
 		$settings['business-name'],
 		$settings['home-page']

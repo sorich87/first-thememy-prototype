@@ -146,7 +146,7 @@ add_filter( 'show_admin_bar', '__return_false' );
  * @since ThemeMY! 0.1
  */
 function thememy_restrict_pages() {
-	if ( is_user_logged_in() ) {
+	if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
 		if ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) ) {
 			wp_redirect( site_url( 'themes/' ) );
 			exit;
@@ -161,7 +161,7 @@ function thememy_restrict_pages() {
 		}
 
 	} else {
-		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) ) {
+		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}
@@ -471,6 +471,7 @@ function thememy_process_order() {
 		$order->post_status = 'publish';
 		wp_update_post( $order );
 		update_post_meta( $order->ID, '_thememy_transaction', $transaction );
+		update_post_meta( $order->ID, '_thememy_buyer', $data['sender_email'] );
 
 		thememy_assign_theme( $data['sender_email'], $theme->ID );
 		thememy_send_download_email( $data['sender_email'], $order->ID );
@@ -495,10 +496,28 @@ function thememy_assign_theme( $email, $theme_id ) {
 	if ( ! $buyer_id )
 		$buyer_id = wp_create_user( wp_hash( $email ), wp_generate_password(), $email );
 
-	$themes = get_user_meta( $buyer_id, '_thememy_themes' );
+	$themes = thememy_get_themes( $buyer_id );
 
 	if ( ! in_array( $theme_id, $themes ) )
 		add_user_meta( $buyer_id, '_thememy_themes', $theme_id );
+}
+
+/**
+ * Get all the themes assigned to a buyer
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $buyer Buyer email or ID
+ */
+function thememy_get_themes( $buyer ) {
+	if ( is_int( $buyer ) )
+		$buyer_id = $buyer;
+	elseif ( is_email( $buyer ) )
+		$buyer_id = get_user_by( 'email', $buyer )->ID;
+	else
+		return;
+
+	return get_user_meta( $buyer_id, '_thememy_themes' );
 }
 
 /**
@@ -687,4 +706,33 @@ function thememy_process_api_requests() {
 	exit;
 }
 add_action( 'template_redirect', 'thememy_process_api_requests' );
+
+/**
+ * Send installation request email to ThemeMY! admin
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_install_request() {
+	if ( ! is_page_template( 'download-page.php' ) || empty( $_POST ) )
+		return;
+
+	$to = get_option( 'admin_email' );
+	$subject = __( 'Theme Instalation Request' );
+	$message = json_encode( stripslashes_deep( $_POST ) );
+
+	wp_email( $to, $subject, $message );
+
+	wp_redirect( add_query_arg( 'message', '1' ) );
+	die;
+}
+add_action( 'template_redirect', 'thememy_install_request' );
+
+/**
+ * Echo ThemeMY! plugin download link
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_plugin_download_link() {
+	echo '';
+}
 

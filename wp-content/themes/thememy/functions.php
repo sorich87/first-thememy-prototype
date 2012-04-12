@@ -286,7 +286,7 @@ function thememy_redirect_to_paypal() {
 				)
 			),
 			'actionType' => 'PAY',
-			'ipnNotificationUrl' => site_url(),
+			'ipnNotificationUrl' => add_query_arg( 'item', $theme->ID, site_url() ),
 			'memo' => sprintf( __( 'Payment for %s' ), $theme->post_title )
 		) )
 	);
@@ -300,8 +300,6 @@ function thememy_redirect_to_paypal() {
 
 	if ( empty( $result->payKey ) )
 		thememy_error( $response );
-
-	thememy_create_order( $result->payKey, $theme->ID );
 
 	wp_redirect( add_query_arg( 'paykey', $result->payKey, "https://www.{$paypal_host}/webapps/adaptivepayment/flow/pay" ) );
 	exit;
@@ -346,24 +344,27 @@ add_action( 'init', 'thememy_register_post_type' );
  * @param string $paykey Paypal payKey
  * @param string $type theme or package
  */
-function thememy_create_order( $paykey, $item_id, $type = 'theme' ) {
+function thememy_create_order( $data, $item_id, $type = 'theme' ) {
 	$theme = get_post( $item_id );
 	$settings = thememy_get_settings( $theme->post_author );
 
 	$args = array(
 		'post_type'   => 'thememy_order',
 		'post_author' => $theme->post_author,
-		'post_title'  => sprintf( __( 'Purchase %s' ), wp_hash( $paykey ) )
+		'post_title'  => sprintf( __( 'Purchase %s' ), wp_hash( $data['paykey'] ) ),
+		'post_status' => 'publish'
 	);
 	$order_id = wp_insert_post( $args );
 
 	if ( ! $order_id )
 		return 0;
 
+	update_post_meta( $order_id, '_thememy_transaction', $data['transaction'][0] );
+	update_post_meta( $order_id, '_thememy_buyer', $data['sender_email'] );
 	update_post_meta( $order_id, '_thememy_item', $item_id );
 	update_post_meta( $order_id, '_thememy_amount', $settings['price-one'] );
 	update_post_meta( $order_id, '_thememy_email', $settings['paypal-email'] );
-	update_post_meta( $order_id, '_thememy_paykey', $paykey );
+	update_post_meta( $order_id, '_thememy_paykey', $data['paykey'] );
 	update_post_meta( $order_id, '_thememy_type', $type );
 
 	return $order_id;
@@ -377,10 +378,9 @@ function thememy_create_order( $paykey, $item_id, $type = 'theme' ) {
  * @param string $paykey Paypal payKey
  * @param string Order status
  */
-function thememy_get_order( $paykey, $status = array( 'publish', 'draft' ) ) {
+function thememy_get_order( $paykey ) {
 	$args = array(
 		'post_type'   => 'thememy_order',
-		'post_status' => $status,
 		'meta_key'    => '_thememy_paykey',
 		'meta_value'  => $paykey
 	);
@@ -439,13 +439,16 @@ function thememy_process_order() {
 		return;
 
 	// Check that the order has not been previously processed
-	$order = thememy_get_order( $data['paykey'], 'draft' );
-	if ( ! $order )
+	$order = thememy_get_order( $data['paykey'] );
+	if ( $order )
 		return;
 
 	// Add 'cmd' and post back to PayPal to validate
 
 	$data['cmd'] = '_notify-validate';
+
+	$theme = get_post( $_GET['item'] );
+	$settings = get_settings( $theme->post_author );
 
 	if ( empty( $settings['test-mode'] ) )
 		$paypal_host = 'paypal.com';
@@ -462,18 +465,13 @@ function thememy_process_order() {
 	// Process result
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
-		$amount = get_post_meta( $order->ID, '_thememy_amount', true );
-		$email = get_post_meta( $order->ID, '_thememy_email', true );
 		$transaction = $data['transaction'][0];
 
 		// Check that receiver email is the author PayPal email and payment amount is correct
-		if ( $email != $transaction.receiver || $amount != $transaction.amount )
+		if ( $settings['paypal-email'] != $transaction.receiver || $settings['price-one'] != $transaction.amount )
 			thememy_error( $response, false );
 
-		$order->post_status = 'publish';
-		wp_update_post( $order );
-		update_post_meta( $order->ID, '_thememy_transaction', $transaction );
-		update_post_meta( $order->ID, '_thememy_buyer', $data['sender_email'] );
+		$order_id = thememy_create_order( $data, $theme->ID );
 
 		thememy_assign_theme( $data['sender_email'], $theme->ID );
 		thememy_send_download_email( $data['sender_email'], $order->ID );

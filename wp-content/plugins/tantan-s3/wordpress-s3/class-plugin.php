@@ -319,7 +319,7 @@ class TanTanWordPressS3Plugin extends TanTanWordPressS3PluginPublic {
 		//wp_enqueue_script('prototype');
 		if (!$this->options) $this->options = get_option('tantan_wordpress_s3');
 
-		$accessDomain = $this->options['virtual-host'] ? $this->options['bucket'] : $this->options['bucket'].'.s3.amazonaws.com';
+		$accessDomain = ! empty( $this->options['virtual-host'] ) ? $this->options['bucket'] : $this->options['bucket'].'.s3.amazonaws.com';
 
 		include(dirname(__FILE__).'/admin-tab-head.html');
 	}

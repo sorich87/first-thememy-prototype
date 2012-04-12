@@ -122,6 +122,13 @@ get_header(); ?>
 									<input<?php if ( isset( $settings['test-mode'] ) ) checked( $settings['test-mode'], 'yes' ); ?> type="checkbox" id="test-mode" name="test-mode" value="yes">
 									<?php _e( 'Use this with a <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_testing_SBTestAccounts">Paypal test account</a> to test the purchase links. Real payments will not be processed.' ); ?>
 								</label>
+								<p class="help-block"><?php _e( 'You can use the following test accounts or your own:' ); ?></p>
+								<dl class="help-block dl-horizontal">
+									<dt><?php _e( 'Seller' ); ?></dt>
+									<dd>theme_1334269599_biz@gmail.com</dd>
+									<dt><?php _e( 'Buyer' ); ?></dt>
+									<dd>theme_1334269869_per@gmail.com, <b>Password:</b> thememydemo</dd>
+								</dl>
 							</div>
 						</div>
 						<div class="control-group">

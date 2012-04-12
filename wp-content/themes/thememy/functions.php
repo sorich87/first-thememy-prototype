@@ -320,6 +320,7 @@ function thememy_register_post_type() {
 			'singular_name' => __( 'Order' )
 		),
 		'public' => false,
+    'show_ui' => true,
 		'map_meta_cap' => true
 	);
 	register_post_type( 'thememy_order', $args );
@@ -329,7 +330,8 @@ function thememy_register_post_type() {
 			'name' => __( 'Logs' ),
 			'singular_name' => __( 'Log' )
 		),
-		'public' => false
+		'public' => false,
+    'show_ui' => true
 	);
 	register_post_type( 'thememy_log', $args );
 }

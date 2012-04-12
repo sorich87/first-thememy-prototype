@@ -171,9 +171,8 @@ function td_get_all_versions( $theme_id = null ) {
 	if ( $attachments ) {
 		foreach ( $attachments as $attachment ) {
 			$version = get_post_meta( $attachment->ID, '_td_version', true );
-			$url = wp_get_attachment_url( $attachment->ID );
 
-			$versions[$version] = $url;
+			$versions[$version] = get_post_meta( $attachment->ID, '_td_data', true );
 		}
 	}
 

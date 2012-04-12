@@ -307,6 +307,7 @@ class TD_Admin {
 		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file ) );
 
 		update_post_meta( $attachment_id, '_td_version', $theme_data['Version'] );
+		update_post_meta( $attachment_id, '_td_data', $theme_data );
 
 		// Make file private on s3
 		if ( $amazon = get_post_meta( $attachment_id, 'amazonS3_info', true ) ) {

@@ -161,7 +161,7 @@ function thememy_restrict_pages() {
 		}
 
 	} else {
-		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) ) {
+		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) && ! is_page( 'api' ) ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}
@@ -633,20 +633,21 @@ function thememy_api_theme_details( $theme_id ) {
 	if ( ! $theme )
 		return;
 
-	$current_version = td_get_current_version( $theme_id );
 	$theme_data = td_get_theme_data( $theme_id );
 
+	$versions = td_get_all_versions( $theme_id );
+	foreach ( $versions as $version => $version_data ) {
+		$versions[$version] = array(
+			'version' => $version,
+			'URI'     => $version_data['URI']
+		);
+	}
+
 	$details = array(
-		'versions' => array(
-			$current_version => array(
-				'version' => $current_version,
-				'date' => mysql2date( 'Y-m-d', $theme->post_date ),
-				'package' => td_get_download_link( $theme_id )
-			)
-		),
-		'info' => array(
-			'url' => $theme_data['URI']
-		)
+		'package'     => td_get_download_link( $theme_id ),
+		'new_version' => td_get_current_version( $theme_id ),
+		'url'         => $theme_data['URI'],
+		'versions'    => $versions
 	);
 
 	return $details;
@@ -660,40 +661,46 @@ function thememy_api_theme_details( $theme_id ) {
 function thememy_process_api_requests() {
 	if ( ! is_page( 'api' ) || empty( $_REQUEST['action'] ) )
 		return;
-	var_dump( thememy_api_theme_details( 1022 ) );
-	die;
 
-	extract( stripslashes_deep( $_POST ) );
+	$request = stripslashes_deep( $_REQUEST );
 
-	if ( is_array( $request ) )
-		$request = (object) $request;
+	if ( 'theme_update' != $request['action'] || wp_hash( $request['email'] ) != $request['api_key'] )
+		return;
 
-	$theme_details = thememy_api_theme_details();
+	// get details of themes purchased by the user
+	$themes = thememy_get_themes( $request['email'] );
+	if ( ! $themes )
+		return;
 
-	$latest_package = array_shift( $packages[$args->slug]['versions'] );
+	$themes = get_posts( array( 'post__in' => $themes, 'post_type' => 'td_theme' ) );
+	if ( ! $themes )
+		return;
 
-	if ( $action == 'basic_check' ) {	
-		$update_info = (object) $latest_package;
-		$update_info->slug = $args->slug;
-		
-		if ( version_compare( $args->version, $latest_package['version'], '<' ) )
-			$update_info->new_version = $update_info->version;
-		
-		echo serialize( $update_info );
+	foreach ( $themes as $theme ) {
+		$available[$theme->post_title] = thememy_api_theme_details( $theme->ID );
 	}
 
-	if ( $action == 'theme_update' ) {
-		$update_info = (object) $latest_package;
-		
-		//$update_data = new stdClass;
-		$update_data = array();
-		$update_data['package'] = $update_info->package;	
-		$update_data['new_version'] = $update_info->version;
-		$update_data['url'] = $packages[$args->slug]['info']['url'];
-			
-		if ( version_compare( $args->version, $latest_package['version'], '<' ) )
-			echo serialize( $update_data );	
+	// loop through the user's installed themes and match themes names and URIs
+	$installed = json_decode( $request['themes'] );
+	foreach ( $installed as $slug => $theme ) {
+		$theme_name = $theme['Name'];
+		if ( ! isset( $available[$name] ) )
+			continue;
+
+		$match = $available[$name];
+		$theme_version = $theme['Version'];
+
+		if ( ! isset( $match['versions'][$theme_version] ) || $match['versions'][$theme_version]['URI'] != $theme['URI'] )
+			continue;
+
+		$new[$slug] = array(
+			'package'     => $match['package'],
+			'new_version' => $match['new_version'],
+			'url'         => $match['url']
+		);
 	}
+
+	echo json_encode( $new );	
 
 	exit;
 }

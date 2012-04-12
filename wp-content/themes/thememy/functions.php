@@ -502,6 +502,41 @@ function thememy_assign_theme( $email, $theme_id ) {
 }
 
 /**
+ * Serve private files for download from S3
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_get_attachment_url( $url, $post_id ) {
+	if ( get_post_meta( $post_id, '_s3_acl', true ) != 'authenticated-read' )
+		return $url;
+
+	require_once( WP_PLUGIN_DIR . '/tantan-s3/wordpress-s3/lib.s3.php' );
+
+	$s3_config = get_option('tantan_wordpress_s3');
+
+	if ( $s3_config['wp-uploads'] && ( $amazon = get_post_meta( $post_id, 'amazonS3_info', true ) ) ) {
+		$domain = ! empty( $s3_config['virtual-host'] ) ? $amazon['bucket'] : "{$amazon['bucket']}.s3.amazonaws.com";
+
+		$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
+
+		$expires = strtotime( '+1 hour' );
+		$string_to_sign = "GET\n\n\n$expires\n/{$amazon['bucket']}/{$amazon['key']}";
+		$signature = $s3->constructSig( $string_to_sign );
+
+		$url = add_query_arg( array(
+			'AWSAccessKeyId' => $s3_config['key'],
+			'Expires'        => $expires,
+			'Signature'      => urlencode( $signature )
+		), "http://{$domain}/{$amazon['key']}" );
+
+		return $url;
+	}
+
+	return $url;
+}
+add_action( 'wp_get_attachment_url', 'thememy_get_attachment_url', 10, 2 );
+
+/**
  * Send theme download email to a buyer
  *
  * @since ThemeMY! 0.1

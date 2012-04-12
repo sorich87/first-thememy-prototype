@@ -313,6 +313,8 @@ class TD_Admin {
 			$s3_config = get_option( 'tantan_wordpress_s3' );
 			$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
 			$s3->setObjectACL( $amazon['bucket'], $amazon['key'], 'authenticated-read' );
+
+			update_post_meta( $attachment_id, '_s3_acl', 'authenticated-read' );
 		}
 
 		return $attachment_id;

@@ -161,7 +161,7 @@ function thememy_restrict_pages() {
 		}
 
 	} else {
-		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) && ! is_page( 'api' ) ) {
+		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) && ! is_page( 'api' ) && ! is_page( 'ipn' ) ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}
@@ -430,10 +430,10 @@ function thememy_count_orders( $author_id = null ) {
  * @since ThemeMY! 0.1
  */
 function thememy_process_order() {
-	if ( ! isset( $_POST['transaction_type'] ) )
+	if ( ! is_page( 'ipn' ) || empty( $_POST ) )
 		return;
 
-	thememy_error( __( 'IPN - received' ) . json_encode( $_POST ), false );
+	thememy_error( __( '$_POST - received' ) . json_encode( $_POST ), false );
 
 	$data = stripslashes_deep( $_POST );
 
@@ -490,7 +490,7 @@ function thememy_process_order() {
 		thememy_error( $response, false );
 	}
 }
-add_action( 'init', 'thememy_process_order' );
+add_action( 'template_redirect', 'thememy_process_order' );
 
 /**
  * Assign theme to a buyer profile

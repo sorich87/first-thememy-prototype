@@ -359,7 +359,6 @@ function thememy_create_order( $data, $item_id, $type = 'theme' ) {
 	if ( ! $order_id )
 		return 0;
 
-	update_post_meta( $order_id, '_thememy_transaction', $data['transaction'][0] );
 	update_post_meta( $order_id, '_thememy_buyer', $data['sender_email'] );
 	update_post_meta( $order_id, '_thememy_item', $item_id );
 	update_post_meta( $order_id, '_thememy_amount', $settings['price-one'] );
@@ -468,12 +467,8 @@ function thememy_process_order() {
 	thememy_error( $response, false );
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
-		thememy_error( $data, false );
-
-		$transaction = $data['transaction'][0];
-
-		// Check that receiver email is the author PayPal email and payment amount is correct
-		if ( $settings['paypal-email'] != $transaction.receiver || $settings['price-one'] != $transaction.amount ) {
+		// Check that payment amount is correct
+		if ( $settings['price-one'] != str_replace( 'USD ', '', $data['transaction'][0] ) ) {
 			thememy_error( $response, false );
 			return;
 		}

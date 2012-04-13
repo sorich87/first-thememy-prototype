@@ -286,7 +286,7 @@ function thememy_redirect_to_paypal() {
 				)
 			),
 			'actionType' => 'PAY',
-			'ipnNotificationUrl' => add_query_arg( 'item', $theme->ID, site_url() ),
+			'ipnNotificationUrl' => add_query_arg( 'item', $theme->ID, site_url( 'ipn/' ) ),
 			'memo' => sprintf( __( 'Payment for %s' ), $theme->post_title )
 		) )
 	);

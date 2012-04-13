@@ -505,7 +505,7 @@ function thememy_process_order() {
 
 	$req = 'cmd=_notify-validate&' . $raw_post;
 
-	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $data ) );
+	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $req ) );
 
 	if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 		thememy_error( $response, false );
@@ -517,8 +517,10 @@ function thememy_process_order() {
 	thememy_error( $result, false );
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
-		// Check that payment amount is correct
-		if ( $settings['price-one'] != str_replace( 'USD ', '', $data['transaction'][0] ) ) {
+		// Check that payment amount and receiver email are correct
+		$transaction = $data['transaction'][0];
+
+		if ( $settings['paypal-email'] != $transaction.receiver || $settings['price-one'] != $transaction.amount ) {
 			thememy_error( $response, false );
 			return;
 		}

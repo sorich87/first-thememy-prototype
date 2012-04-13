@@ -465,7 +465,7 @@ function thememy_process_order() {
 	$result = wp_remote_retrieve_body( $response );
 
 	// Process result
-	thememy_error( $data, false );
+	thememy_error( $response, false );
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
 		thememy_error( $data, false );
@@ -483,9 +483,9 @@ function thememy_process_order() {
 		thememy_assign_theme( $data['sender_email'], $theme->ID );
 		thememy_send_download_email( $data['sender_email'], $order->ID );
 
-	} elseif ( strcmp( $results, 'INVALID' ) == 0 ) {
-		thememy_error( $response, false );
 	}
+
+	thememy_error( $data, false );
 }
 add_action( 'template_redirect', 'thememy_process_order' );
 

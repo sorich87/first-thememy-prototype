@@ -430,8 +430,6 @@ function thememy_count_orders( $author_id = null ) {
  * @since ThemeMY! 0.1
  */
 function thememy_process_order() {
-	thememy_error( __( '$_POST - received' ) . json_encode( $_POST ), false );
-
 	if ( ! isset( $_POST['transaction_type'] ) )
 		return;
 

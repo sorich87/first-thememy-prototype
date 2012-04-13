@@ -444,7 +444,7 @@ function thememy_process_order() {
 
 	// Add 'cmd' and post back to PayPal to validate
 
-	$data['cmd'] = '_notify-validate';
+	$data = array_merge( array( 'cmd' => '_notify-validate' ), $data );
 
 	$theme = get_post( $_GET['item'] );
 	$settings = get_settings( $theme->post_author );

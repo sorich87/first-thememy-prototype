@@ -444,19 +444,21 @@ function thememy_process_order() {
 
 	// Add 'cmd' and post back to PayPal to validate
 
-	$data = array_merge( array( 'cmd' => '_notify-validate' ), $data );
-
 	$theme = get_post( $_GET['item'] );
-	$settings = get_settings( $theme->post_author );
-	thememy_error( $theme, false );
-	thememy_error( $settings, false );
+	$settings = thememy_get_settings( $theme->post_author );
 
 	if ( empty( $settings['test-mode'] ) )
 		$paypal_host = 'paypal.com';
 	else
 		$paypal_host = 'sandbox.paypal.com';
 
-	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $data ) );
+	$req = 'cmd=_notify-validate';
+	foreach ( $_POST as $key => $value ) {
+		$value = urlencode( stripslashes( $value ) );
+		$req .= "&$key=$value";
+	}
+
+	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $req ) );
 
 	if ( is_wp_error( $response ) ) {
 		thememy_error( $response, false );

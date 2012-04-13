@@ -521,12 +521,12 @@ function thememy_process_order() {
 
 		thememy_error( array(
 			'paypal-email' => $settings['paypal-email'],
-			'paypal-email-api' => $transaction.receiver,
+			'paypal-email-api' => $transaction['receiver'],
 			'amount' => $amount,
-			'amount-api' => $transaction.amount
+			'amount-api' => $transaction['amount']
 		), false );
 
-		if ( $settings['paypal-email'] == $transaction.receiver && $amount == $transaction.amount ) {
+		if ( $settings['paypal-email'] == $transaction['receiver'] && $amount == $transaction['amount'] ) {
 			$order_id = thememy_create_order( $data, $theme->ID );
 
 			thememy_assign_theme( $data['sender_email'], $theme->ID );

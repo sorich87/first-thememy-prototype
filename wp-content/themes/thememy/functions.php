@@ -454,7 +454,7 @@ function thememy_process_order() {
 
 	$data['cmd'] = '_notify-validate';
 
-	$response = wp_remote_post( "https://www.{$paypal_host}", array( 'body' => $data ) );
+	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $data ) );
 
 	if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 		thememy_error( $response, false );
@@ -483,12 +483,6 @@ function thememy_process_order() {
 	exit;
 }
 add_action( 'template_redirect', 'thememy_process_order' );
-
-function test_paypal_ipn() {
-	if ( ! empty( $_POST['transaction_type'] ) )
-		thememy_error( $_POST, false );
-}
-add_action( 'parse_request', 'test_paypal_ipn' );
 
 /**
  * Assign theme to a buyer profile

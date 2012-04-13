@@ -465,6 +465,7 @@ function thememy_process_order() {
 	$result = wp_remote_retrieve_body( $response );
 
 	// Process result
+	thememy_error( $data, false );
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
 		thememy_error( $data, false );

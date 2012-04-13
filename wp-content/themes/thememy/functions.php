@@ -514,13 +514,12 @@ function thememy_process_order() {
 
 	$result = wp_remote_retrieve_body( $response );
 
-	thememy_error( $result, false );
-
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
 		// Check that payment amount and receiver email are correct
 		$transaction = $data['transaction'][0];
+		$amount = 'USD ' . number_format( $settings['price-one'], 2 );
 
-		if ( $settings['paypal-email'] != $transaction.receiver || $settings['price-one'] != $transaction.amount ) {
+		if ( $settings['paypal-email'] != $transaction.receiver || $amount != $transaction.amount ) {
 			thememy_error( $response, false );
 			return;
 		}

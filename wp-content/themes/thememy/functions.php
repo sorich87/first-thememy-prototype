@@ -286,7 +286,7 @@ function thememy_redirect_to_paypal() {
 				)
 			),
 			'actionType' => 'PAY',
-			'ipnNotificationUrl' => add_query_arg( array( 'item' => $theme->ID, 'paypalListener' => 'IPN' ), home_url( '/' ) ),
+			'ipnNotificationUrl' => add_query_arg( 'item', $theme->ID, site_url( 'ipn/' ) ),
 			'memo' => sprintf( __( 'Payment for %s' ), $theme->post_title )
 		) )
 	);
@@ -423,16 +423,67 @@ function thememy_count_orders( $author_id = null ) {
 	return $days;
 }
 
+function thememy_decode_ipn( $raw_post ) {
+	if ( empty( $raw_post ) )
+		return array();
+
+	$post = array();
+	$pairs = explode( '&', $raw_post );
+	foreach ( $pairs as $pair ) {
+		list( $key, $value ) = explode( '=', $pair, 2 );
+		$key = urldecode( $key );
+		$value = urldecode( $value );
+
+		// This is look for a key as simple as 'return_url' or as complex as 'somekey[x].property'
+		preg_match( '/(\w+)(?:\[(\d+)\])?(?:\.(\w+))?/', $key, $key_parts );
+
+		switch ( count( $key_parts ) ) {
+			case 4:
+				// Original key format: somekey[x].property
+				// Converting to $post[somekey][x][property]
+				if ( ! isset( $post[$key_parts[1]] ) ) {
+					$post[$key_parts[1]] = array(
+						$key_parts[2] => array(
+							$key_parts[3] => $value
+						)
+					);
+				} else if ( ! isset( $post[$key_parts[1]][$key_parts[2]] ) ) {
+					$post[$key_parts[1]][$key_parts[2]] = array( $key_parts[3] => $value );
+				} else {
+					$post[$key_parts[1]][$key_parts[2]][$key_parts[3]] = $value;
+				}
+				break;
+
+			case 3:
+				// Original key format: somekey[x]
+				// Converting to $post[somkey][x] 
+				if ( ! isset( $post[$key_parts[1]] ) )
+					$post[$key_parts[1]] = array();
+
+				$post[$key_parts[1]][$key_parts[2]] = $value;
+				break;
+
+			default:
+				// No special format
+				$post[$key] = $value;
+				break;
+		}
+	}
+
+	return $post;
+}
+
 /**
  * Process order
  *
  * @since ThemeMY! 0.1
  */
 function thememy_process_order() {
-	if ( get_query_var( 'paypalListener' ) != 'IPN' )
+	if ( ! is_page( 'ipn' ) || empty( $_POST ) )
 		return;
 
-	$data = stripslashes_deep( $_POST );
+	$raw_post = file_get_contents( 'php://input' );
+	$data = thememy_decode_ipn( $raw_post );
 
 	if ( 'Adaptive Payment PAY' != $data['transaction_type'] || 'COMPLETED' != $data['status'] )
 		return;
@@ -452,7 +503,7 @@ function thememy_process_order() {
 	else
 		$paypal_host = 'sandbox.paypal.com';
 
-	$data['cmd'] = '_notify-validate';
+	$req = 'cmd=_notify-validate&' . $raw_post;
 
 	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $data ) );
 

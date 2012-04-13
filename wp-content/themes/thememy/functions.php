@@ -446,6 +446,7 @@ function thememy_process_order() {
 
 	$theme = get_post( $_GET['item'] );
 	$settings = thememy_get_settings( $theme->post_author );
+	thememy_error( $settings, false );
 
 	if ( empty( $settings['test-mode'] ) )
 		$paypal_host = 'paypal.com';

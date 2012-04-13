@@ -433,21 +433,15 @@ function thememy_process_order() {
 	if ( ! is_page( 'ipn' ) || empty( $_POST ) )
 		return;
 
-	thememy_error( __( '$_POST - received' ) . json_encode( $_POST ), false );
-
 	$data = stripslashes_deep( $_POST );
 
 	if ( 'Adaptive Payment PAY' != $data['transaction_type'] || 'COMPLETED' != $data['status'] )
 		return;
 
-	thememy_error( __( 'IPN - "COMPLETED" received' ), false );
-
 	// Check that the order has not yet been processed
 	$order = thememy_get_order( $data['paykey'] );
 	if ( $order )
 		return;
-
-	thememy_error( __( 'IPN - Not yet processed' ), false );
 
 	// Add 'cmd' and post back to PayPal to validate
 
@@ -473,6 +467,8 @@ function thememy_process_order() {
 	// Process result
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
+		thememy_error( $data, false );
+
 		$transaction = $data['transaction'][0];
 
 		// Check that receiver email is the author PayPal email and payment amount is correct

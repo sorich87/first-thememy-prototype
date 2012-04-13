@@ -363,7 +363,7 @@ function thememy_create_order( $data, $item_id, $type = 'theme' ) {
 	update_post_meta( $order_id, '_thememy_item', $item_id );
 	update_post_meta( $order_id, '_thememy_amount', $settings['price-one'] );
 	update_post_meta( $order_id, '_thememy_email', $settings['paypal-email'] );
-	update_post_meta( $order_id, '_thememy_paykey', $data['paykey'] );
+	update_post_meta( $order_id, '_thememy_paykey', $data['pay_key'] );
 	update_post_meta( $order_id, '_thememy_type', $type );
 
 	return $order_id;

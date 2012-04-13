@@ -286,7 +286,7 @@ function thememy_redirect_to_paypal() {
 				)
 			),
 			'actionType' => 'PAY',
-			'ipnNotificationUrl' => add_query_arg( 'item', $theme->ID, site_url( 'ipn/' ) ),
+			'ipnNotificationUrl' => add_query_arg( array( 'item' => $theme->ID, 'paypalListener' => 'IPN' ), home_url( '/' ) ),
 			'memo' => sprintf( __( 'Payment for %s' ), $theme->post_title )
 		) )
 	);
@@ -429,7 +429,7 @@ function thememy_count_orders( $author_id = null ) {
  * @since ThemeMY! 0.1
  */
 function thememy_process_order() {
-	if ( ! is_page( 'ipn' ) || empty( $_POST ) )
+	if ( get_query_var( 'paypalListener' ) != 'IPN' )
 		return;
 
 	$data = stripslashes_deep( $_POST );

@@ -452,13 +452,9 @@ function thememy_process_order() {
 	else
 		$paypal_host = 'sandbox.paypal.com';
 
-	$req = 'cmd=_notify-validate';
-	foreach ( $_POST as $key => $value ) {
-		$value = urlencode( stripslashes( $value ) );
-		$req .= "&$key=$value";
-	}
+	$data['cmd'] = '_notify-validate';
 
-	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $req ) );
+	$response = wp_remote_post( "https://www.{$paypal_host}/webscr", array( 'body' => $data ) );
 
 	if ( is_wp_error( $response ) ) {
 		thememy_error( $response, false );

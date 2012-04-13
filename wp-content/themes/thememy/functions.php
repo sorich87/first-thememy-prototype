@@ -519,16 +519,19 @@ function thememy_process_order() {
 		$transaction = $data['transaction'][0];
 		$amount = 'USD ' . number_format( $settings['price-one'], 2 );
 
-		if ( $settings['paypal-email'] != $transaction.receiver || $amount != $transaction.amount ) {
-			thememy_error( $response, false );
-			return;
+		thememy_error( array(
+			'paypal-email' => $settings['paypal-email'],
+			'paypal-email-api' => $transaction.receiver,
+			'amount' => $amount,
+			'amount-api' => $transaction.amount
+		), false );
+
+		if ( $settings['paypal-email'] == $transaction.receiver && $amount == $transaction.amount ) {
+			$order_id = thememy_create_order( $data, $theme->ID );
+
+			thememy_assign_theme( $data['sender_email'], $theme->ID );
+			thememy_send_download_email( $data['sender_email'], $order->ID );
 		}
-
-		$order_id = thememy_create_order( $data, $theme->ID );
-
-		thememy_assign_theme( $data['sender_email'], $theme->ID );
-		thememy_send_download_email( $data['sender_email'], $order->ID );
-
 	}
 
 	thememy_error( $data, false );

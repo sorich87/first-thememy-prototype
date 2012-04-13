@@ -446,7 +446,6 @@ function thememy_process_order() {
 
 	$theme = get_post( $_GET['item'] );
 	$settings = thememy_get_settings( $theme->post_author );
-	thememy_error( $settings, false );
 
 	if ( empty( $settings['test-mode'] ) )
 		$paypal_host = 'paypal.com';
@@ -454,6 +453,8 @@ function thememy_process_order() {
 		$paypal_host = 'sandbox.paypal.com';
 
 	$data['cmd'] = '_notify-validate';
+
+	thememy_error( "https://www.{$paypal_host}/webscr", false );
 
 	$response = wp_remote_post( "https://www.{$paypal_host}/webscr", array( 'body' => $data ) );
 

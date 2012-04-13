@@ -519,18 +519,13 @@ function thememy_process_order() {
 		$transaction = $data['transaction'][0];
 		$amount = 'USD ' . number_format( $settings['price-one'], 2 );
 
-		thememy_error( array(
-			'paypal-email' => $settings['paypal-email'],
-			'paypal-email-api' => $transaction['receiver'],
-			'amount' => $amount,
-			'amount-api' => $transaction['amount']
-		), false );
-
 		if ( $settings['paypal-email'] == $transaction['receiver'] && $amount == $transaction['amount'] ) {
 			$order_id = thememy_create_order( $data, $theme->ID );
 
 			thememy_assign_theme( $data['sender_email'], $theme->ID );
 			thememy_send_download_email( $data['sender_email'], $order->ID );
+
+			exit;
 		}
 	}
 
@@ -790,4 +785,19 @@ add_action( 'template_redirect', 'thememy_install_request' );
 function thememy_plugin_download_link() {
 	echo '';
 }
+
+/**
+ * Display dump of post meta on order edit screen
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_display_meta_dump() {
+	global $post;
+
+	if ( 'thememy_order' != $post->post_type )
+		return;
+
+	var_dump( get_post_custom( $post->ID ) );
+}
+add_action( 'dbx_post_sidebar', 'thememy_display_meta_dump' );
 

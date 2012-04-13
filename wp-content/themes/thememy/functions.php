@@ -448,6 +448,8 @@ function thememy_process_order() {
 
 	$theme = get_post( $_GET['item'] );
 	$settings = get_settings( $theme->post_author );
+	thememy_error( $theme, false );
+	thememy_error( $settings, false );
 
 	if ( empty( $settings['test-mode'] ) )
 		$paypal_host = 'paypal.com';
@@ -461,9 +463,9 @@ function thememy_process_order() {
 		return;
 	}
 
-	thememy_error( $response, false );
-
 	$result = wp_remote_retrieve_body( $response );
+
+	thememy_error( $result, false );
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
 		// Check that payment amount is correct

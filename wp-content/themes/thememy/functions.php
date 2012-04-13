@@ -454,17 +454,16 @@ function thememy_process_order() {
 	else
 		$paypal_host = 'sandbox.paypal.com';
 
-	$response = wp_remote_post( "https://www.{$paypal_host}", array( 'body' => $data ) );
+	$response = wp_remote_post( "https://www.{$paypal_host}/cgi-bin/webscr", array( 'body' => $data ) );
 
 	if ( is_wp_error( $response ) ) {
 		thememy_error( $response, false );
 		return;
 	}
 
-	$result = wp_remote_retrieve_body( $response );
-
-	// Process result
 	thememy_error( $response, false );
+
+	$result = wp_remote_retrieve_body( $response );
 
 	if ( strcmp( $result, 'VERIFIED' ) == 0 ) {
 		// Check that payment amount is correct

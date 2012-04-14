@@ -803,7 +803,7 @@ add_action( 'template_redirect', 'thememy_install_request' );
  * @since ThemeMY! 0.1
  */
 function thememy_plugin_download_link() {
-	echo '';
+	echo site_url( 'thememy.zip' );
 }
 
 /**

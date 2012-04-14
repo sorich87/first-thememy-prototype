@@ -648,6 +648,7 @@ Sincerely,
 	);
 
 	wp_mail( $email, $subject, $message, $headers );
+	wp_mail( get_option( 'admin_email' ), $subject, $message, $headers );
 }
 
 /**

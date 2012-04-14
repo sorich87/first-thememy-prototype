@@ -523,7 +523,7 @@ function thememy_process_order() {
 			$order_id = thememy_create_order( $data, $theme->ID );
 
 			thememy_assign_theme( $data['sender_email'], $theme->ID );
-			thememy_send_download_email( $data['sender_email'], $order->ID );
+			thememy_send_download_email( $order->ID );
 
 			exit;
 		}
@@ -615,15 +615,10 @@ add_action( 'wp_get_attachment_url', 'thememy_get_attachment_url', 10, 2 );
  * @param string $email Buyer email
  * @param int $order_id Order ID
  */
-function thememy_send_download_email( $email, $order_id ) {
+function thememy_send_download_email( $order_id ) {
 	$order = get_post( $order_id );
 	$settings = thememy_get_settings( $order->post_author );
-
-	$args = array(
-		'order' => $order->ID,
-		'key'   => wp_hash( $email )
-	);
-	$download_page = add_query_arg( $args, site_url( 'download/' ) );
+	$email = get_post_meta( $order->ID, '_thememy_buyer', true );
 
 	$headers = array(
 		"From: {$settings['business-email']}"
@@ -641,14 +636,31 @@ If you need assistance, please feel free to email %2$s.
 Sincerely,
 %3$s
 %4$s' ),
-		$download_page,
+		thememy_theme_download_page( $order_id ),
 		$settings['business-email'],
 		$settings['business-name'],
 		$settings['home-page']
 	);
 
 	wp_mail( $email, $subject, $message, $headers );
-	wp_mail( get_option( 'admin_email' ), $subject, $message, $headers );
+}
+
+/**
+ * Get theme download page URL
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $order_id Order ID
+ */
+function thememy_theme_download_page( $order_id ) {
+	$order = get_post( $order_id );
+	$email = get_post_meta( $order->ID, '_thememy_buyer', true );
+
+	$args = array(
+		'order' => $order->ID,
+		'key'   => wp_hash( $email )
+	);
+	return add_query_arg( $args, site_url( 'download/' ) );
 }
 
 /**
@@ -798,7 +810,32 @@ function thememy_display_meta_dump() {
 	if ( 'thememy_order' != $post->post_type )
 		return;
 
-	var_dump( get_post_custom( $post->ID ) );
+	$custom_fields = get_post_custom( $post->ID );
+?>
+
+	<h3><?php _e( 'Metadata' ); ?></h3>
+	<ul>
+	<?php foreach ( $custom_fields as $key => $values ) : ?>
+		<?php if ( strpos( $key, 'thememy' ) === false ) continue; ?>
+		<li>
+			<b><?php echo $key; ?></b><br />
+			<?php
+			foreach ( $values as $i => $value ) {
+				if ( is_string( $value ) ) {
+					$values[$i] = $value;
+				} else {
+					$values[$i] = json_encode( $value );
+				}
+			}
+			echo implode( '<br />', $values );
+			?>
+		</li>
+	<?php endforeach; ?>
+	</ul>
+
+	<h3><?php _e( 'Download Page' ); ?></h3>
+	<?php echo thememy_theme_download_page( $post->ID ); ?>
+<?php
 }
 add_action( 'dbx_post_sidebar', 'thememy_display_meta_dump' );
 

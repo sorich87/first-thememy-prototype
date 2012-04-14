@@ -705,15 +705,15 @@ function thememy_api_theme_details( $theme_id ) {
 	$versions = td_get_all_versions( $theme_id );
 	foreach ( $versions as $version => $version_data ) {
 		$versions[$version] = array(
-			'version' => $version,
-			'URI'     => $version_data['URI']
+			'version'  => $version,
+			'ThemeURI' => $version_data['ThemeURI']
 		);
 	}
 
 	$details = array(
 		'package'     => td_get_download_link( $theme_id ),
 		'new_version' => td_get_current_version( $theme_id ),
-		'url'         => $theme_data['URI'],
+		'url'         => $theme_data['ThemeURI'],
 		'versions'    => $versions
 	);
 
@@ -757,7 +757,7 @@ function thememy_process_api_requests() {
 		$match = $available[$theme_name];
 		$theme_version = $theme['Version'];
 
-		if ( ! isset( $match['versions'][$theme_version] ) || $match['versions'][$theme_version]['URI'] != $theme['URI'] )
+		if ( ! isset( $match['versions'][$theme_version] ) || $match['versions'][$theme_version]['ThemeURI'] != $theme['ThemeURI'] )
 			continue;
 
 		$new[$slug] = array(
@@ -767,7 +767,8 @@ function thememy_process_api_requests() {
 		);
 	}
 
-	echo json_encode( $new );	
+	if ( $new )
+		echo json_encode( $new );	
 
 	exit;
 }

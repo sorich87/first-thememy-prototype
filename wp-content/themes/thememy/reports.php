@@ -12,6 +12,13 @@ get_header(); ?>
 		<h1><?php _e( 'Sales Reports' ); ?></h1>
 	</div>
 
+	<div class="alert alert-info">
+		<?php printf( __(
+			'We are working on more detailed reports and would like to hear about what you want to see on this page. Please <a href="%s">send us your feedback</a>.' ),
+			site_url( 'feedback/' )
+		); ?>
+	</div>
+
 	<?php if ( $count = thememy_count_orders() ) : ?>
 
 		<div id="chart"></div>

@@ -140,7 +140,6 @@ add_filter( 'show_admin_bar', '__return_false' );
 
 /**
  * Don't show front page to logged-in users
- * Don't show admin to authors and subscribers
  * Show front page only to non logged-in users
  *
  * @since ThemeMY! 0.1
@@ -150,14 +149,6 @@ function thememy_restrict_pages() {
 		if ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) ) {
 			wp_redirect( site_url( 'themes/' ) );
 			exit;
-
-		} elseif ( is_admin() && ! current_user_can( 'edit_other_posts' ) ) {
-			global $plugin_page;
-
-			if ( 'td-admin' != $plugin_page || empty( $_FILES['themezip'] ) ) {
-				wp_redirect( site_url( 'themes/' ) );
-				exit;
-			}
 		}
 
 	} else {
@@ -168,6 +159,24 @@ function thememy_restrict_pages() {
 	}
 }
 add_action( 'template_redirect', 'thememy_restrict_pages' );
+
+/**
+ * Restrict admin pages from authors, contributors and subscribers
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_restrict_admin() {
+	if ( current_user_can( 'edit_others_posts' ) )
+		return;
+
+	global $plugin_page;
+
+	if ( 'td-admin' != $plugin_page || empty( $_FILES['themezip'] ) ) {
+		wp_redirect( site_url( 'themes/' ) );
+		exit;
+	}
+}
+add_action( 'admin_init', 'thememy_restrict_admin' );
 
 /**
  * Send feedback to site admin
@@ -873,4 +882,12 @@ function thememy_mail_from_name( $from_name ){
 	return $from_name;
 }
 add_filter( 'wp_mail_from_name', 'thememy_mail_from_name' );
+
+function hwl_home_pagesize( $query ) {
+	if ( ! is_post_type_archive( 'td_theme' ) )
+		return;
+
+	$query->query_vars['author'] = get_current_user_id();
+}
+add_action( 'pre_get_posts', 'hwl_home_pagesize' );
 

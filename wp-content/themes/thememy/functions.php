@@ -621,7 +621,7 @@ function thememy_send_download_email( $order_id ) {
 	$email = get_post_meta( $order->ID, '_thememy_buyer', true );
 
 	$headers = array(
-		"\"{$settings['business-name']}\" <From: {$settings['business-email']}>"
+		"From: {$settings['business-name']} <{$settings['business-email']}>"
 	);
 
 	$subject = __( 'Download your new theme' );
@@ -841,4 +841,32 @@ function thememy_display_meta_dump() {
 <?php
 }
 add_action( 'dbx_post_sidebar', 'thememy_display_meta_dump' );
+
+/**
+ * Change default email sender
+ */
+function thememy_mail_from( $from_email ) {
+	if ( strpos( $from_email, 'wordpress' ) === 0 ) {
+		$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+
+		if ( substr( $sitename, 0, 4 ) == 'www.' )
+			$sitename = substr( $sitename, 4 );
+
+		$from_email = 'no-reply@' . $sitename;
+	}
+
+	return $from_email;
+}
+add_filter( 'wp_mail_from', 'thememy_mail_from' );
+
+/**
+ * Change default email sender name
+ */
+function thememy_mail_from_name( $from_name ){
+	if ( 'WordPress' == $from_name )
+		$from_name = get_option( 'blogname' );
+
+	return $from_name;
+}
+add_filter( 'wp_mail_from_name', 'thememy_mail_from_name' );
 

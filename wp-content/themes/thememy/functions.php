@@ -883,11 +883,32 @@ function thememy_mail_from_name( $from_name ){
 }
 add_filter( 'wp_mail_from_name', 'thememy_mail_from_name' );
 
-function hwl_home_pagesize( $query ) {
+/**
+ * Alter themes archive page query var by restricting to current user themes
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_pre_get_posts( $query ) {
 	if ( ! is_post_type_archive( 'td_theme' ) )
 		return;
 
 	$query->query_vars['author'] = get_current_user_id();
 }
-add_action( 'pre_get_posts', 'hwl_home_pagesize' );
+add_action( 'pre_get_posts', 'thememy_pre_get_posts' );
+
+/**
+ * Don't allow direct access to upload directory
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_mod_rewrite_rules( $rules ) {
+	$rules = str_replace(
+		"\nRewriteRule ^index\.php$ - [L]\n",
+		"\nRewriteRule ^wp-content/uploads/ - [R=404,L,NC]\nRewriteRule ^index\.php$ - [L]\n",
+		$rules
+	);
+
+	return $rules;
+}
+add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
 

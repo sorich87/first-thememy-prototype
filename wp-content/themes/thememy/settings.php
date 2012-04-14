@@ -129,6 +129,7 @@ get_header(); ?>
 									<dt><?php _e( 'Buyer' ); ?></dt>
 									<dd>theme_1334269869_per@gmail.com, <b>Password:</b> thememydemo</dd>
 								</dl>
+								<p><?php _e( 'The purchase confirmation email will also be sent to your business email.' ); ?>
 							</div>
 						</div>
 						<div class="control-group">

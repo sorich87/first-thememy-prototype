@@ -621,7 +621,7 @@ function thememy_send_download_email( $order_id ) {
 	$email = get_post_meta( $order->ID, '_thememy_buyer', true );
 
 	$headers = array(
-		"From: {$settings['business-email']}"
+		"\"{$settings['business-name']}\" <From: {$settings['business-email']}>"
 	);
 
 	$subject = __( 'Download your new theme' );
@@ -643,6 +643,9 @@ Sincerely,
 	);
 
 	wp_mail( $email, $subject, $message, $headers );
+
+	if ( ! empty( $settings['test-mode'] ) )
+		wp_mail( $settings['business-email'], $subject, $message, $headers );
 }
 
 /**

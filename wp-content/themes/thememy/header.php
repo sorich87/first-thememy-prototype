@@ -82,7 +82,7 @@
 
 		<?php do_action( 'before' ); ?>
 
-		<?php if ( ! is_page_template( 'store-page.php' ) ) : ?>
+		<?php if ( ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) ) : ?>
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">

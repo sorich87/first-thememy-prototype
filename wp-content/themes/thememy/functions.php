@@ -760,6 +760,9 @@ function thememy_process_api_requests() {
 		if ( ! isset( $match['versions'][$theme_version] ) || $match['versions'][$theme_version]['ThemeURI'] != $theme['ThemeURI'] )
 			continue;
 
+		if ( $theme_version >= $match['new_version'] )
+			continue;
+
 		$new[$slug] = array(
 			'package'     => $match['package'],
 			'new_version' => $match['new_version'],

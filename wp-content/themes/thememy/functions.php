@@ -732,16 +732,16 @@ function thememy_process_api_requests() {
 	$request = stripslashes_deep( $_REQUEST );
 
 	if ( 'theme_update' != $request['action'] || wp_hash( $request['email'] ) != $request['api_key'] )
-		return;
+		exit;
 
 	// get details of themes purchased by the user
 	$themes = thememy_get_themes( $request['email'] );
 	if ( ! $themes )
-		return;
+		exit;
 
 	$themes = get_posts( array( 'post__in' => $themes, 'post_type' => 'td_theme' ) );
 	if ( ! $themes )
-		return;
+		exit;
 
 	foreach ( $themes as $theme ) {
 		$available[$theme->post_title] = thememy_api_theme_details( $theme->ID );
@@ -751,10 +751,10 @@ function thememy_process_api_requests() {
 	$installed = json_decode( $request['themes'] );
 	foreach ( $installed as $slug => $theme ) {
 		$theme_name = $theme['Name'];
-		if ( ! isset( $available[$name] ) )
+		if ( ! isset( $available[$theme_name] ) )
 			continue;
 
-		$match = $available[$name];
+		$match = $available[$theme_name];
 		$theme_version = $theme['Version'];
 
 		if ( ! isset( $match['versions'][$theme_version] ) || $match['versions'][$theme_version]['URI'] != $theme['URI'] )

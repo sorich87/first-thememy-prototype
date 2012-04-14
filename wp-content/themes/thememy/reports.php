@@ -9,7 +9,7 @@
 get_header(); ?>
 
 	<div class="page-header">
-		<h1><?php _e( 'Sales Reports' ); ?></h1>
+		<h1><?php _e( 'Your Sales Reports' ); ?></h1>
 	</div>
 
 	<div class="alert alert-info">

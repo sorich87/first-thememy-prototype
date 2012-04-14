@@ -48,6 +48,16 @@ get_header(); ?>
 		</dl>
 	</div>
 
+	<p><?php _e( 'Your API credentials are:' ); ?></p>
+	<div class="well">
+		<dl class="dl-horizontal">
+			<dt><?php _e( 'Email:' ); ?></dt>
+			<dd><?php echo $buyer_email; ?></dd>
+			<dt><?php _e( 'API Key:' ); ?></dt>
+			<dd><?php echo $access_key; ?></dd>
+		</dl>
+	</div>
+
 	<p><?php _e( "If you would like the theme to be installed for you on your server, fill in the form below. It's free and the installation will be done within 12 hours." ); ?></p>
 
 	<form class="form-horizontal" action="" method="post">

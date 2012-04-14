@@ -7,7 +7,7 @@
  */
 
 $order = get_post( $_GET['order'] );
-$access_key = $_GET['access_key'];
+$access_key = $_GET['key'];
 
 if ( ! $order )
 	wp_die( __( 'Order not found' ) );

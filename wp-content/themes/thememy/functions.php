@@ -786,7 +786,7 @@ function thememy_install_request() {
 	$subject = __( 'Theme Installation Request' );
 	$message = json_encode( stripslashes_deep( $_POST ) );
 
-	wp_email( $to, $subject, $message );
+	wp_mail( $to, $subject, $message );
 
 	wp_redirect( add_query_arg( 'message', '1' ) );
 	die;

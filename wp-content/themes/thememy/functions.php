@@ -748,7 +748,7 @@ function thememy_process_api_requests() {
 	}
 
 	// loop through the user's installed themes and match themes names and URIs
-	$installed = json_decode( $request['themes'] );
+	$installed = json_decode( $request['themes'], true );
 	foreach ( $installed as $slug => $theme ) {
 		$theme_name = $theme['Name'];
 		if ( ! isset( $available[$theme_name] ) )

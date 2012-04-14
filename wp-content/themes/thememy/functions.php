@@ -590,7 +590,7 @@ function thememy_get_attachment_url( $url, $post_id ) {
 
 		$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
 
-		$expires = strtotime( '+1 hour' );
+		$expires = strtotime( '+1 day' );
 		$string_to_sign = "GET\n\n\n$expires\n/{$amazon['bucket']}/{$amazon['key']}";
 		$signature = $s3->constructSig( $string_to_sign );
 

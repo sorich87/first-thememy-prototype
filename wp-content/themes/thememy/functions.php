@@ -711,14 +711,14 @@ function thememy_api_theme_details( $theme_id ) {
 	foreach ( $versions as $version => $version_data ) {
 		$versions[$version] = array(
 			'version'  => $version,
-			'ThemeURI' => $version_data['ThemeURI']
+			'ThemeURI' => $version_data['URI']
 		);
 	}
 
 	$details = array(
 		'package'     => td_get_download_link( $theme_id ),
 		'new_version' => td_get_current_version( $theme_id ),
-		'url'         => $theme_data['ThemeURI'],
+		'url'         => $theme_data['URI'],
 		'versions'    => $versions
 	);
 

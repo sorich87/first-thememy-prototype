@@ -87,7 +87,10 @@
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container">
-					<a class="brand" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+					<a class="brand" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
+						<?php bloginfo( 'name' ); ?>
+						<sup>beta</sup>
+					</a>
 					<?php if ( is_user_logged_in() ) : ?>
 					<ul class="nav">
 						<li<?php if ( is_post_type_archive( 'td_theme' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'themes/' ); ?>"><?php _e( 'Themes' ); ?></a></li>

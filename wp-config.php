@@ -17,6 +17,22 @@
 if ( file_exists( dirname( __FILE__ ) . '/local-config.php' ) )
 	include( dirname( __FILE__ ) . '/local-config.php' );
 
+// ** SMTP settings ** //
+/** SMTP server */
+define( 'SMTP_HOST', 'smtp.sendgrid.net' );
+
+/** SMTP username */
+define( 'SMTP_USER', 'thememy' );
+
+/** SMTP password */
+define( 'SMTP_PASSWORD', 'Theme12MY!' );
+
+/** SMTP port */
+define( 'SMTP_PORT', 587 );
+
+/** SMTP secure connections protocol */
+define( 'SMTP_SECURE', 'TLS' );
+
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 define('DB_NAME', 'thememy_com');

@@ -884,6 +884,30 @@ function thememy_mail_from_name( $from_name ){
 add_filter( 'wp_mail_from_name', 'thememy_mail_from_name' );
 
 /**
+ * Use SMTP to send emails
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_phpmailer_init( $phpmailer ) {
+	if ( ! defined( 'SMTP_HOST' ) )
+		return;
+
+	$phpmailer->IsSMTP();
+	$phpmailer->Host = SMTP_HOST;
+	$phpmailer->Port = defined( 'SMTP_PORT' ) ? SMTP_PORT : 25;
+	if ( defined( 'SMTP_USER' ) ) {
+		$phpmailer->SMTPAuth = true;
+		$phpmailer->Username = SMTP_USER;
+		$phpmailer->Password = defined( 'SMTP_PASSWORD' ) ? SMTP_PASSWORD : '';
+	}
+	if ( defined( 'SMTP_SECURE' ) )
+		$phpmailer->SMTPSecure = SMTP_SECURE;
+	if ( defined( 'SMTP_DEBUG' ) && SMTP_DEBUG )
+		$phpmailer->SMTPDebug = true;
+}
+add_action( 'phpmailer_init', 'thememy_phpmailer_init' );
+
+/**
  * Alter themes archive page query var by restricting to current user themes
  *
  * @since ThemeMY! 0.1

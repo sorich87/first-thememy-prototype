@@ -629,10 +629,6 @@ function thememy_send_download_email( $order_id ) {
 	$settings = thememy_get_settings( $order->post_author );
 	$email = get_post_meta( $order->ID, '_thememy_buyer', true );
 
-	$headers = array(
-		"From: {$settings['business-name']} <{$settings['business-email']}>"
-	);
-
 	$subject = __( 'Download your new theme' );
 
 	$message = sprintf( __( 'Thanks for your purchase. Your payment has been received.

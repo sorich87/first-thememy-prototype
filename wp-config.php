@@ -17,6 +17,12 @@
 if ( file_exists( dirname( __FILE__ ) . '/local-config.php' ) )
 	include( dirname( __FILE__ ) . '/local-config.php' );
 
+// ** Paypal API settings ** //
+define( 'X_PAYPAL_SECURITY_USERID', 'ulrich.sossou_api1.takitiz.com' );
+define( 'X_PAYPAL_SECURITY_PASSWORD', 'EYKWUTQ7K83B8JA9' );
+define( 'X_PAYPAL_SECURITY_SIGNATURE', 'A8Cdu8CvZd7Iex6FUIl8z6Jelvw1Au.hOAwUwFAugChJvtRqUn8Y-FQj' );
+define( 'X_PAYPAL_APPLICATION_ID', 'APP-1JF21546D8116283X' );
+
 // ** SMTP settings ** //
 /** SMTP server */
 define( 'SMTP_HOST', 'smtp.sendgrid.net' );

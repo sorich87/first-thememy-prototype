@@ -261,23 +261,36 @@ function thememy_redirect_to_paypal() {
 	if ( empty( $settings ) )
 		thememy_error( json_encode( array( 'seller' => $theme->post_author, 'error' => 10001 ) ) );
 
-	if ( empty( $settings['test-mode'] ) )
+	if ( empty( $settings['test-mode'] ) ) {
 		$paypal_host = 'paypal.com';
-	else
+
+		$headers = array(
+			'X-PAYPAL-SECURITY-USERID'      => X_PAYPAL_SECURITY_USERID,
+			'X-PAYPAL-SECURITY-PASSWORD'    => X_PAYPAL_SECURITY_PASSWORD,
+			'X-PAYPAL-SECURITY-SIGNATURE'   => X_PAYPAL_SECURITY_SIGNATURE,
+			'X-PAYPAL-APPLICATION-ID'       => X_PAYPAL_APPLICATION_ID,
+			'X-PAYPAL-DEVICE-IPADDRESS'     => $_SERVER['REMOTE_ADDR'],
+			'X-PAYPAL-REQUEST-DATA-FORMAT'  => 'JSON',
+			'X-PAYPAL-RESPONSE-DATA-FORMAT' => 'JSON'
+		);
+	} else {
 		$paypal_host = 'sandbox.paypal.com';
+
+		$headers = array(
+			'X-PAYPAL-SECURITY-USERID'      => 'sorich_1322676683_biz_api1.gmail.com',
+			'X-PAYPAL-SECURITY-PASSWORD'    => '1322676719',
+			'X-PAYPAL-SECURITY-SIGNATURE'   => 'AFFkJs.IxAtULlzaWU9t3xWHoNVwANpHE1q68lz-vmgRJKoN6THqZ7sY',
+			'X-PAYPAL-APPLICATION-ID'       => 'APP-80W284485P519543T',
+			'X-PAYPAL-DEVICE-IPADDRESS'     => '127.0.0.1',
+			'X-PAYPAL-REQUEST-DATA-FORMAT'  => 'JSON',
+			'X-PAYPAL-RESPONSE-DATA-FORMAT' => 'JSON'
+		);
+	}
 
 	$api_endpoint = "https://svcs.{$paypal_host}/AdaptivePayments/Pay";
 
 	$args = array(
-		'headers' => array(
-			'X-PAYPAL-SECURITY-USERID'      => 'sorich_1322676683_biz_api1.gmail.com',
-			'X-PAYPAL-SECURITY-PASSWORD'    => '1322676719',
-			'X-PAYPAL-SECURITY-SIGNATURE'   => 'AFFkJs.IxAtULlzaWU9t3xWHoNVwANpHE1q68lz-vmgRJKoN6THqZ7sY',
-			'X-PAYPAL-REQUEST-DATA-FORMAT'  => 'JSON',
-			'X-PAYPAL-RESPONSE-DATA-FORMAT' => 'JSON',
-			'X-PAYPAL-APPLICATION-ID'       => 'APP-80W284485P519543T',
-			'X-PAYPAL-DEVICE-IPADDRESS'     => '127.0.0.1'
-		),
+		'headers' => $headers,
 		'body' => json_encode( array(
 			'returnUrl' => $settings['return-page'],
 			'cancelUrl' => $settings['cancel-page'],

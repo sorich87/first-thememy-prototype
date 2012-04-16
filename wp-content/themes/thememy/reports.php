@@ -59,4 +59,38 @@ get_header(); ?>
 
 	<?php endif; ?>
 
+	<?php
+	$args = array(
+		'post_type' => 'thememy_order',
+		'author' => get_current_user_id()
+	);
+	$orders = get_posts( $args );
+	?>
+	<?php foreach ( (array) $orders as $order ) : ?>
+		<table class="table table-striped table-condensed">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th><?php _e( 'Date' ); ?></th>
+					<th><?php _e( 'Buyer Email' ); ?></th>
+					<th><?php _e( 'Theme' ); ?></th>
+					<th><?php _e( 'Download Page' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php echo $order->ID; ?></td>
+					<td><?php echo mysql2date( 'd-m-Y', $order->post_date ); ?></td>
+					<td><?php echo get_post_meta( $order->ID, '_thememy_buyer', true ); ?></td>
+					<?php
+					$theme_id = get_post_meta( $order->ID, '_thememy_item', true );
+					$theme = get_post( $theme_id );
+					?>
+					<td><?php echo $theme ? $theme->post_title : ''; ?></td>
+					<td><?php echo thememy_theme_download_page( $order->ID ); ?></td>
+				</tr>
+			</tbody>
+		</table>
+	<?php endforeach; ?>
+
 <?php get_footer(); ?>

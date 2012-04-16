@@ -112,6 +112,7 @@ function thememy_scripts() {
 
 	wp_enqueue_script( 'small-menu', get_template_directory_uri() . '/js/small-menu.js', 'jquery', '20120206', true );
 
+	wp_enqueue_script( 'bootstrap-modal', get_template_directory_uri() . '/assets/js/bootstrap-modal.js', 'jquery', '20120416', true );
 	wp_enqueue_script( 'bootstrap-tab', get_template_directory_uri() . '/assets/js/bootstrap-tab.js', 'jquery', '20120412', true );
 
 	if ( is_page_template( 'reports.php' ) )
@@ -124,6 +125,86 @@ function thememy_scripts() {
 		wp_enqueue_script( 'keyboard-image-navigation', get_template_directory_uri() . '/js/keyboard-image-navigation.js', array( 'jquery' ), '20120202' );
 }
 add_action( 'wp_enqueue_scripts', 'thememy_scripts' );
+
+/**
+ * Add Getting Started modal
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_getting_started() {
+	if ( get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
+		|| get_posts( array( 'post_type' => 'thememy_order', 'author' => get_current_user_id(), 'fields' => 'ids' ) ) )
+		return;
+?>
+<div class="modal hide" id="getting-started">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal" href="#getting-started">×</a>
+		<h3><?php _e( 'Getting Started' ); ?></h3>
+  </div>
+  <div class="modal-body">
+		<p><?php _e( 'Start selling your themes in three (3) easy steps.' ); ?></p>
+
+		<h4>
+			<?php _e( 'Step 1' ); ?>
+			<?php if ( thememy_get_settings() ) : ?>
+				<span class="label label-success"><?php _e( 'done' ); ?></span>
+			<?php endif; ?>
+		</h4>
+		<p><?php printf(
+			__( 'Go to <a href="%s">the settings page</a> and fill in your business, pricing and payment details.' ),
+			site_url( 'settings/' )
+		); ?></p>
+
+		<h4>
+			<?php _e( 'Step 2' ); ?>
+			<?php if ( get_posts( array( 'post_type' => 'td_theme', 'author' => get_current_user_id(), 'fields' => 'ids' ) ) ) : ?>
+				<span class="label label-success"><?php _e( 'done' ); ?></span>
+			<?php endif; ?>
+		</h4>
+		<p><?php printf(
+			__( 'Go to <a href="%s">the themes page</a> and upload the themes you want to sell.' ),
+			site_url( 'themes/' )
+		); ?></p>
+
+		<h4><?php _e( 'Step 3' ); ?></h4>
+		<p><?php _e( 'Copy the themes purchase links and paste them in your website.' ); ?></p>
+  </div>
+  <div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal"><?php _e( 'Close' ); ?></a>
+		<a href="#" class="btn btn-warning" id="no-getting-started"><?php _e( "Don't show this again" ); ?></a>
+  </div>
+</div>
+<script type="text/javascript">
+jQuery(function ($) {
+	$("#getting-started").modal();
+
+	$("#no-getting-started").click(function (e) {
+		e.stopPropagation();
+
+		var data = {
+			action: "thememy-no-getting-started",
+			nonce: "<?php echo wp_create_nonce( 'thememy-no-getting-started' ); ?>"
+		};
+		$.post( "<?php echo admin_url( 'admin-ajax.php' ); ?>", data );
+
+		$("#getting-started").modal( "hide" );
+	});
+});
+</script>
+<?php
+}
+add_action( 'wp_footer', 'thememy_getting_started', 20 );
+
+function thememy_no_getting_started() {
+	if ( ! wp_verify_nonce( $_POST['nonce'], 'thememy-no-getting-started' ) || 'thememy-no-getting-started' != $_POST['action'] )
+		die( 'Dude, this is not your business.' );
+
+	if ( update_user_option( get_current_user_id(), 'thememy_show_getting_started', 'no' ) )
+		echo 'saved';
+
+	exit;
+}
+add_action( 'wp_ajax_thememy-no-getting-started', 'thememy_no_getting_started' );
 
 /**
  * Implement the Custom Header feature

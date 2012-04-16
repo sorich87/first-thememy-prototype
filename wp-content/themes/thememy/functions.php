@@ -370,11 +370,16 @@ function thememy_create_order( $data, $item_id, $type = 'theme' ) {
 	$theme = get_post( $item_id );
 	$settings = thememy_get_settings( $theme->post_author );
 
+	if ( empty( $settings['test-mode'] ) )
+		$status = 'publish';
+	else
+		$status = 'private';
+
 	$args = array(
 		'post_type'   => 'thememy_order',
 		'post_author' => $theme->post_author,
 		'post_title'  => sprintf( __( 'Purchase %s' ), wp_hash( $data['paykey'] ) ),
-		'post_status' => 'publish'
+		'post_status' => $status
 	);
 	$order_id = wp_insert_post( $args );
 

@@ -341,7 +341,8 @@ function thememy_register_post_type() {
 		),
 		'public' => false,
     'show_ui' => true,
-		'map_meta_cap' => true
+		'map_meta_cap' => true,
+		'supports' => array( 'title', 'editor', 'author' )
 	);
 	register_post_type( 'thememy_order', $args );
 
@@ -429,8 +430,14 @@ function thememy_count_orders( $author_id = null ) {
 	if ( empty( $author_id ) )
 		$author_id = get_current_user_id();
 
+	$settings = thememy_get_settings( $author_id );
+
+	$status = array( "post_status = 'publish'" );
+	if ( ! empty( $settings['test-mode'] ) )
+		$status[] = "post_status = 'private'";
+
 	$counts = $wpdb->get_results( $wpdb->prepare(
-		"SELECT DATE(post_date) AS date, COUNT(ID) AS count FROM $wpdb->posts WHERE post_author = %d AND post_type = 'thememy_order' and post_status = 'publish' GROUP BY date",
+		"SELECT DATE(post_date) AS date, COUNT(ID) AS count FROM $wpdb->posts WHERE post_author = %d AND post_type = 'thememy_order' AND (" . join( ' OR ', $status ) . ") GROUP BY date",
 		$author_id
 	), OBJECT_K );
 

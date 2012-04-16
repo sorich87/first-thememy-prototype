@@ -12,6 +12,14 @@ get_header(); ?>
 		<h1><?php _e( 'Your Sales Reports' ); ?></h1>
 	</div>
 
+	<?php $settings = thememy_get_settings(); ?>
+
+	<?php if ( ! empty( $settings['test-mode'] ) ) : ?>
+		<div class="alert alert-error">
+			<?php _e( 'Your store is in test mode. The orders you made for testing will be displayed here.' ); ?>
+		</div>
+	<?php endif; ?>
+
 	<div class="alert alert-info">
 		<?php printf( __(
 			'We are working on more detailed reports and would like to hear about what you want to see on this page. Please <a href="%s">send us your feedback</a>.' ),
@@ -62,35 +70,43 @@ get_header(); ?>
 	<?php
 	$args = array(
 		'post_type' => 'thememy_order',
-		'author' => get_current_user_id()
+		'author' => get_current_user_id(),
+		'post_status' => empty( $settings['test-mode'] ) ? 'publish' : array( 'publish', 'private' )
 	);
 	$orders = get_posts( $args );
 	?>
-	<?php foreach ( (array) $orders as $order ) : ?>
-		<table class="table table-striped table-condensed">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th><?php _e( 'Date' ); ?></th>
-					<th><?php _e( 'Buyer Email' ); ?></th>
-					<th><?php _e( 'Theme' ); ?></th>
-					<th><?php _e( 'Download Page' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><?php echo $order->ID; ?></td>
-					<td><?php echo mysql2date( 'd-m-Y', $order->post_date ); ?></td>
-					<td><?php echo get_post_meta( $order->ID, '_thememy_buyer', true ); ?></td>
-					<?php
-					$theme_id = get_post_meta( $order->ID, '_thememy_item', true );
-					$theme = get_post( $theme_id );
-					?>
-					<td><?php echo $theme ? $theme->post_title : ''; ?></td>
-					<td><?php echo thememy_theme_download_page( $order->ID ); ?></td>
-				</tr>
-			</tbody>
-		</table>
-	<?php endforeach; ?>
+	<?php if ( $orders ) : ?>
+	<table class="table table-striped table-condensed">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th><?php _e( 'Date' ); ?></th>
+				<th><?php _e( 'Buyer Email' ); ?></th>
+				<th><?php _e( 'Theme' ); ?></th>
+				<th><?php _e( 'Download Page' ); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ( $orders as $order ) : ?>
+			<tr>
+				<td>
+					<?php echo $order->ID; ?>
+					<?php if ( ! empty( $settings['test-mode'] ) && 'private' == $order->post_status ) : ?>
+						<?php echo '<span class="badge badge-info">' . __( 'test' ) . '</span>'; ?>
+					<?php endif; ?>
+				</td>
+				<td><?php echo mysql2date( 'd-m-Y', $order->post_date ); ?></td>
+				<td><?php echo get_post_meta( $order->ID, '_thememy_buyer', true ); ?></td>
+				<?php
+				$theme_id = get_post_meta( $order->ID, '_thememy_item', true );
+				$theme = get_post( $theme_id );
+				?>
+				<td><?php echo $theme ? $theme->post_title : ''; ?></td>
+				<td><?php echo thememy_theme_download_page( $order->ID ); ?></td>
+			</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php endif; ?>
 
 <?php get_footer(); ?>

@@ -49,12 +49,12 @@
 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo get_template_directory_uri(); ?>/assets/ico/apple-touch-icon-72-precomposed.png">
 <link rel="apple-touch-icon-precomposed" href="<?php echo get_template_directory_uri(); ?>/assets/ico/apple-touch-icon-57-precomposed.png">
 
-<meta property="og:title" content="ThemeMY! - Setup your WordPress theme marketplace in 10 minutes." />
+<meta property="og:title" content="ThemeMY! - Setup your WordPress theme store in 10 minutes." />
 <meta property="og:type" content="company" />
 <meta property="og:site_name" content="ThemeMY!" />
 <meta property="og:url" content="http://thememy.com/" />
 <meta property="og:image" content="null" />
-<meta property="og:description" content="I just signed up to ThemeMY! and will be able to setup my own WordPress theme marketplace in minutes. Check it out now! (Seats are limited)" />
+<meta property="og:description" content="I just signed up to ThemeMY! and will be able to setup my own WordPress theme store in minutes. Check it out now! (Seats are limited)" />
 
 <?php if ( is_page_template( 'store-page.php' ) ) : ?>
 <meta name="robots" content="noindex, nofollow" />

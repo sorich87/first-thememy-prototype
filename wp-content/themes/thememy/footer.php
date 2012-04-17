@@ -15,7 +15,7 @@
         <?php do_action( 'thememy_credits' ); ?>
         <p>
           Copyright &copy; 2012
-          <a href="<?php esc_url( home_url( '/' ) ); ?>" title="<?php esc_attr_e( 'The easiest way to sell WordPress themes' ); ?>">ThemeMY!</a>
+          <a href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php esc_attr_e( 'The easiest way to sell WordPress themes' ); ?>">ThemeMY!</a>
         </p>
       </footer>
 

@@ -36,6 +36,8 @@ get_header(); ?>
 	<?php endif; ?>
 
 	<form class="form-horizontal" method="post">
+		<?php wp_get_referer(); ?>
+
 		<div class="tabbable">
 			<ul class="nav nav-tabs">
 			<li class="active"><a href="#tab-general" data-toggle="tab"><?php _e( 'General' ); ?></a></li>

@@ -132,7 +132,7 @@ add_action( 'wp_enqueue_scripts', 'thememy_scripts' );
  * @since ThemeMY! 0.1
  */
 function thememy_getting_started() {
-	if ( get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
+	if ( isset( $_GET['getting_started'] ) || get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
 		|| get_posts( array( 'post_type' => 'thememy_order', 'author' => get_current_user_id(), 'fields' => 'ids' ) ) )
 		return;
 ?>
@@ -152,7 +152,7 @@ function thememy_getting_started() {
 		</h4>
 		<p><?php printf(
 			__( 'Go to <a href="%s">the settings page</a> and fill in your business, pricing and payment details.' ),
-			site_url( 'settings/' )
+			add_query_arg( 'getting_started', 'true', site_url( 'settings/' ) )
 		); ?></p>
 
 		<h4>
@@ -163,7 +163,7 @@ function thememy_getting_started() {
 		</h4>
 		<p><?php printf(
 			__( 'Go to <a href="%s">the themes page</a> and upload the themes you want to sell.' ),
-			site_url( 'themes/' )
+			add_query_arg( 'getting_started', 'true', site_url( 'themes/' ) )
 		); ?></p>
 
 		<h4><?php _e( 'Step 3' ); ?></h4>
@@ -179,11 +179,11 @@ jQuery(function ($) {
 	$("#getting-started").modal();
 
 	$("#no-getting-started").click(function (e) {
-		e.stopPropagation();
+		e.preventDefault();
 
 		var data = {
-			action: "thememy-no-getting-started",
-			nonce: "<?php echo wp_create_nonce( 'thememy-no-getting-started' ); ?>"
+			_ajax_nonce: "<?php echo wp_create_nonce( 'thememy-no-getting-started' ); ?>",
+			action: "thememy-no-getting-started"
 		};
 		$.post( "<?php echo admin_url( 'admin-ajax.php' ); ?>", data );
 
@@ -196,11 +196,9 @@ jQuery(function ($) {
 add_action( 'wp_footer', 'thememy_getting_started', 20 );
 
 function thememy_no_getting_started() {
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'thememy-no-getting-started' ) || 'thememy-no-getting-started' != $_POST['action'] )
-		die( 'Dude, this is not your business.' );
+	check_ajax_referer( 'thememy-no-getting-started' );
 
-	if ( update_user_option( get_current_user_id(), 'thememy_show_getting_started', 'no' ) )
-		echo 'saved';
+	update_user_option( get_current_user_id(), 'thememy_show_getting_started', 'no' );
 
 	exit;
 }
@@ -250,6 +248,9 @@ add_action( 'template_redirect', 'thememy_restrict_pages' );
  * @since ThemeMY! 0.1
  */
 function thememy_restrict_admin() {
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX )
+		return;
+
 	if ( current_user_can( 'edit_others_posts' ) )
 		return;
 
@@ -359,7 +360,7 @@ function thememy_user_signup() {
 	if ( is_wp_error( $user_id ) )
 		thememy_error( $user_id );
 
-	wp_redirect( site_url( "survey/?email=$user_email" ) );
+	wp_redirect( add_query_arg( 'email', urlencode( $user_email ), site_url( "survey/" ) ) );
 	exit;
 }
 add_action( 'template_redirect', 'thememy_user_signup' );
@@ -386,7 +387,7 @@ function thememy_save_settings() {
 
 	update_user_meta( $user_id, '_thememy_settings', $data );
 
-	wp_redirect( site_url( 'settings/?message=1' ) );
+	wp_redirect( add_query_arg( 'message', '1' ) );
 	exit;
 }
 add_action( 'template_redirect', 'thememy_save_settings' );

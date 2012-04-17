@@ -8,7 +8,7 @@
 
 $email = isset( $_GET['email'] ) ? stripslashes( $_GET['email'] ) : '';
 
-if ( ! isset( $_GET['success'] ) && ! get_user_by( 'email', $user_email ) )
+if ( ! isset( $_GET['success'] ) && ! get_user_by( 'email', $email ) )
 	wp_die( __( "You don't have the rights to access this resource." ) );
 
 get_header(); ?>

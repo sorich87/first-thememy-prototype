@@ -82,14 +82,14 @@
 
 		<?php do_action( 'before' ); ?>
 
-		<?php if ( ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) ) : ?>
+		<?php if ( is_front_page() || is_user_logged_in() ) : ?>
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container">
 					<a class="brand" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
 						<?php bloginfo( 'name' ); ?>
-						<sup>beta</sup>
+						<sup><?php _e( 'beta' ); ?></sup>
 					</a>
 					<?php if ( is_user_logged_in() ) : ?>
 					<ul class="nav">

@@ -227,13 +227,16 @@ add_filter( 'show_admin_bar', '__return_false' );
  */
 function thememy_restrict_pages() {
 	if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
-		if ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) ) {
+		if ( ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) )
+	 		|| is_page_template( 'signup-page.php' )	) {
 			wp_redirect( site_url( 'themes/' ) );
 			exit;
 		}
 
 	} else {
-		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'download-page.php' ) && ! is_page( 'api' ) && ! is_page( 'ipn' ) ) {
+		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'survey-page.php' )
+			&& ! is_page_template( 'download-page.php' ) && ! is_page_template( 'signup-page.php' )
+			&& ! is_page( 'api' ) && ! is_page( 'ipn' ) ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}
@@ -285,6 +288,81 @@ function thememy_send_feedback() {
 	exit;
 }
 add_action( 'template_redirect', 'thememy_send_feedback' );
+
+/**
+ * Send survey answers to site admin
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_send_survey() {
+	if ( ! is_page_template( 'survey-page.php' ) || ! isset( $_POST['email'] ) )
+		return;
+
+	$post = stripslashes_deep( $_POST );
+
+	$to = get_option( 'admin_email' );
+	$subject = sprintf( __( 'Survey answers from %s' ), $post['email'] );
+	$message = json_encode( $post );
+
+	wp_mail( $to, $subject, $message );
+
+	wp_redirect( add_query_arg( 'success', 'true' ) );
+	exit;
+}
+add_action( 'template_redirect', 'thememy_send_survey' );
+
+/**
+ * Create a new user account
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_user_signup() {
+	if ( ! is_page_template( 'signup-page.php' ) || empty( $_POST ) )
+		return;
+
+	$data = stripslashes_deep( $_POST );
+
+	$first_name  = isset( $_POST['first_name'] ) ? $_POST['first_name'] : '';
+	$last_name   = isset( $_POST['last_name'] ) ? $_POST['last_name'] : '';
+	$user_email  = isset( $_POST['user_email'] ) ? $_POST['user_email'] : '';
+	$user_pass   = isset( $_POST['user_pass'] ) ? $_POST['user_pass'] : '';
+	$user_pass_2 = isset( $_POST['user_pass_2'] ) ? $_POST['user_pass_2'] : '';
+
+	$redirect_to = add_query_arg( array(
+		'first_name' => $first_name,
+		'last_name' => $last_name,
+		'user_email' => $user_email
+	) );
+
+	if ( ! $first_name || ! $last_name || ! $user_email || ! $user_pass || ! $user_pass_2 ) {
+		wp_redirect( add_query_arg( 'message', '1', $redirect_to ) );
+		exit;
+	}
+
+	if ( ! is_email( $user_email ) ) {
+		wp_redirect( add_query_arg( 'message', '2', remove_query_arg( 'user_email', $redirect_to ) ) );
+		exit;
+	}
+
+	if ( $user_pass != $user_pass_2 ) {
+		wp_redirect( add_query_arg( 'message', '3', $redirect_to ) );
+		exit;
+	}
+
+	$user_login = wp_hash( $user_email );
+	$role = 'author';
+
+	$args = compact( 'first_name', 'last_name', 'user_email', 'user_pass', 'user_login', 'role' );
+
+	$user_id = wp_insert_user( $args );
+
+	if ( is_wp_error( $user_id ) )
+		thememy_error( $user_id );
+
+	wp_redirect( site_url( "survey/?email=$user_email" ) );
+	exit;
+}
+add_action( 'template_redirect', 'thememy_user_signup' );
 
 /**
  * Save user settings

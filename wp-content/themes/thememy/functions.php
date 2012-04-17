@@ -719,7 +719,7 @@ function thememy_process_order() {
 			$order_id = thememy_create_order( $data, $theme->ID );
 
 			thememy_assign_theme( $data['sender_email'], $theme->ID );
-			thememy_send_download_email( $order->ID );
+			thememy_send_download_email( $order_id );
 
 			exit;
 		}

@@ -1121,7 +1121,7 @@ add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
  *
  * @since ThemeMY! 0.1
  */
-function thnememy_authenticate( $user, $username, $password ) {
+function thememy_authenticate( $user, $username, $password ) {
 	if ( ! empty( $username ) )
 		$user = get_user_by( 'email', $username );
 	if ( isset( $user->user_login, $user ) )

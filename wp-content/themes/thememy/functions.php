@@ -1192,7 +1192,7 @@ function thememy_send_invitation() {
 	$signup_page = add_query_arg( array(
 		'user_email' => urlencode( $to ),
 		'key' => wp_hash( $to )
-	), site_url( '/' ) );
+	), site_url( 'signup/' ) );
 
 	$subject = __( 'The wait is over! You can build your theme store now.' );
 
@@ -1201,7 +1201,7 @@ function thememy_send_invitation() {
 
 Since you signed up a couple of weeks ago, we have been hard at work to get ThemeMY! ready for public beta.
 There are so much features we want to add in, but for now we just built the basics.
-We received several emails from some of you asking for the day start sending invitations. That day is today.
+We received several emails from some of you asking for the day we will start sending invitations. That day is today.
 
 Click on the link below to setup your account right away.
 %s
@@ -1218,7 +1218,7 @@ Lead Developer,
 ThemeMY!
 http://thememy.com/
 
-P.S.: If you are not interested in building your theme store anymore, please disregard this email.
+P.S.: If you are not interested in building your theme store anymore, just ignore this email and you will never receive another one.
 " ),
 		$signup_page
 	);

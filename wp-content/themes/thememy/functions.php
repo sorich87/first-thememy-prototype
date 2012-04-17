@@ -834,9 +834,9 @@ Sincerely,
 		$settings['home-page']
 	);
 
-	wp_mail( $email, $subject, $message, $headers );
-
-	if ( ! empty( $settings['test-mode'] ) )
+	if ( empty( $settings['test-mode'] ) )
+		wp_mail( $email, $subject, $message, $headers );
+	else
 		wp_mail( $settings['business-email'], $subject, $message, $headers );
 }
 

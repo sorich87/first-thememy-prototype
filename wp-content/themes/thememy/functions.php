@@ -351,9 +351,10 @@ function thememy_user_signup() {
 	}
 
 	$user_login = wp_hash( $user_email );
+	$display_name = "$first_name $last_name";
 	$role = 'author';
 
-	$args = compact( 'first_name', 'last_name', 'user_email', 'user_pass', 'user_login', 'role' );
+	$args = compact( 'first_name', 'last_name', 'user_email', 'user_pass', 'user_login', 'display_name', 'role' );
 
 	$user_id = wp_insert_user( $args );
 

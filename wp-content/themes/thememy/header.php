@@ -101,6 +101,9 @@
 					<p class="nav pull-right">
 						<a class="btn" href="<?php echo esc_url( wp_logout_url( site_url( '/' ) ) ); ?>">Logout</a>
 					</p>
+				
+					<p class="navbar-text pull-right"><?php printf( __( 'Welcome %s' ), wp_get_current_user()->first_name ); ?></p>
+	
 					<?php else : ?>
 					<form class="navbar-form form-inline pull-right" method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>">
 						<input type="text" class="input-small" placeholder="Email" name="log">

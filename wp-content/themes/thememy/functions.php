@@ -469,6 +469,7 @@ function thememy_redirect_to_paypal() {
 				)
 			),
 			'actionType' => 'PAY',
+			'trackingId' => microtime(),
 			'ipnNotificationUrl' => add_query_arg( 'item', $theme->ID, site_url( 'ipn/' ) ),
 			'memo' => sprintf( __( 'Payment for %s' ), $theme->post_title )
 		) )
@@ -552,25 +553,25 @@ function thememy_create_order( $data, $item_id, $type = 'theme' ) {
 	update_post_meta( $order_id, '_thememy_item', $item_id );
 	update_post_meta( $order_id, '_thememy_amount', $settings['price-one'] );
 	update_post_meta( $order_id, '_thememy_email', $settings['paypal-email'] );
-	update_post_meta( $order_id, '_thememy_paykey', $data['pay_key'] );
+	update_post_meta( $order_id, '_thememy_trackingid', $data['trackingId'] );
 	update_post_meta( $order_id, '_thememy_type', $type );
 
 	return $order_id;
 }
 
 /**
- * Get order by paykey
+ * Get order by trackingId
  *
  * @since ThemeMY! 0.1
  *
- * @param string $paykey Paypal payKey
+ * @param string $trackingid Paypal trackingId
  * @param string Order status
  */
-function thememy_get_order( $paykey ) {
+function thememy_get_order( $trackingid ) {
 	$args = array(
 		'post_type'   => 'thememy_order',
-		'meta_key'    => '_thememy_paykey',
-		'meta_value'  => $paykey
+		'meta_key'    => '_thememy_trackingid',
+		'meta_value'  => $trackingid
 	);
 	$result = get_posts( $args );
 
@@ -684,7 +685,7 @@ function thememy_process_order() {
 		return;
 
 	// Check that the order has not yet been processed
-	$order = thememy_get_order( $data['paykey'] );
+	$order = thememy_get_order( $data['trackingId'] );
 	if ( $order )
 		return;
 

@@ -1116,3 +1116,19 @@ function thememy_mod_rewrite_rules( $rules ) {
 }
 add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
 
+/**
+ * Use email to authenticate users
+ *
+ * @since ThemeMY! 0.1
+ */
+function thnememy_authenticate( $user, $username, $password ) {
+	if ( ! empty( $username ) )
+		$user = get_user_by( 'email', $username );
+	if ( isset( $user->user_login, $user ) )
+		$username = $user->user_login;
+
+	return wp_authenticate_username_password( null, $username, $password );
+}
+remove_filter( 'authenticate', 'wp_authenticate_username_password', 20, 3 );
+add_filter( 'authenticate', 'thememy_authenticate', 20, 3 );
+

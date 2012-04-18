@@ -62,6 +62,7 @@
 
 <?php wp_head(); ?>
 
+<?php if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) : ?>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -75,6 +76,7 @@
   })();
 
 </script>
+<?php endif; ?>
 
 </head>
 

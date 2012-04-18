@@ -211,12 +211,19 @@ add_action( 'wp_ajax_thememy-no-getting-started', 'thememy_no_getting_started' )
 //require( get_template_directory() . '/inc/custom-header.php' );
 
 /**
- * Admin bar hides the top navbar. This temporary solution hides the admin bar.
- * The permanent solution would be to fix with css
+ * Hide admin bar from authors and contributors
  *
  * @since ThemeMY! 0.1
  */
-add_filter( 'show_admin_bar', '__return_false' );
+function thememy_admin_bar( $show ) {
+	global $user_switching;
+
+	if ( ! current_user_can( 'edit_others_posts' ) && ! $user_switching->get_old_user() )
+		$show = false;
+
+	return $show;
+}
+add_filter( 'show_admin_bar', 'thememy_admin_bar' );
 
 /**
  * Don't show front page to logged-in users

@@ -38,6 +38,8 @@ get_header(); ?>
 	<form class="form-horizontal" method="post">
 		<?php wp_get_referer(); ?>
 
+		<p><?php _e( 'Fill out the details on all the three tabs below.' ); ?></p>
+
 		<div class="tabbable">
 			<ul class="nav nav-tabs">
 			<li class="active"><a href="#tab-general" data-toggle="tab"><?php _e( 'General' ); ?></a></li>

@@ -20,7 +20,7 @@ function td_screenshot() {
  * @return string theme screenshot image tag
  */
 function td_get_screenshot( $theme_id = null ) {
-	return get_the_post_thumbnail( $theme_id, 'full' );
+	return get_the_post_thumbnail( $theme_id, 'post-thumbnail' );
 }
 
 /**

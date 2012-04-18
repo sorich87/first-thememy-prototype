@@ -33,10 +33,10 @@ class TD_Themes_List_Table extends WP_List_Table {
 		$args = array(
 			'paged'          => $current_page,
 			'post_type'      => 'td_theme',
-			'posts_per_page' => $per_page
+			'posts_per_page' => $per_page,
+			'post_status'    => isset( $_REQUEST['post_status'] ) ? $_REQUEST['post_status'] : '',
+			'author'         => isset( $_REQUEST['author'] ) ? $_REQUEST['author'] : ''
 		);
-
-		$args['post_status'] = isset( $_REQUEST['post_status'] ) ? $_REQUEST['post_status'] : '';
 
 		$query = new WP_query( $args );
 
@@ -75,6 +75,7 @@ class TD_Themes_List_Table extends WP_List_Table {
 	<?php $title = get_the_title( $theme->ID ); ?>
 	<?php $edit_link = get_edit_post_link( $theme->ID ); ?>
 	<?php $can_edit_post = current_user_can( $post_type_object->cap->edit_post, $theme->ID ); ?>
+	<?php $author = get_userdata( $theme->post_author ); ?>
 
 	<div class="available-theme">
 		<a href="<?php echo $edit_link; ?>" class="screenshot">
@@ -82,8 +83,12 @@ class TD_Themes_List_Table extends WP_List_Table {
 		</a>
 
 		<h4>
-			<?php echo $title; ?>
-			<?php echo td_get_current_version( $theme->ID ); ?>
+		<?php printf(
+			__( '%1$s %2$s by %3$s' ),
+			$title,
+			td_get_current_version( $theme->ID ),
+			'<a href="' . esc_url( add_query_arg( 'author', $author->ID, admin_url( 'admin.php?page=td-admin' ) ) ) . '">' . $author->display_name . '</a>'
+		); ?>
 		</h4>
 
 		<span class="action-links">

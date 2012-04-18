@@ -133,7 +133,7 @@ add_action( 'wp_enqueue_scripts', 'thememy_scripts' );
  * @since ThemeMY! 0.1
  */
 function thememy_getting_started() {
-	if ( ! is_user_logged_in() || isset( $_GET['getting_started'] ) || get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
+	if ( ! is_user_logged_in() || ! empty( $_GET ) || get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
 		|| get_posts( array( 'post_type' => 'thememy_order', 'author' => get_current_user_id(), 'fields' => 'ids' ) ) )
 		return;
 ?>

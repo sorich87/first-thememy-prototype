@@ -105,9 +105,14 @@ add_action( 'widgets_init', 'thememy_widgets_init' );
  * @since ThemeMY! 0.1
  */
 function thememy_scripts() {
+	if ( is_admin() )
+		return;
+
 	global $post;
 
 	wp_enqueue_style( 'style', get_stylesheet_uri() );
+	wp_enqueue_style( 'bootstrap', get_template_directory_uri() . '/assets/css/bootstrap.css' );
+	wp_enqueue_style( 'bootstrap-reponsive', get_template_directory_uri() . '/assets/css/bootstrap-responsive.css' );
 
 	wp_enqueue_script( 'jquery' );
 

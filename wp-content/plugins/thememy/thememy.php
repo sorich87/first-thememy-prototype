@@ -27,4 +27,8 @@ define( 'THEMEMY_PLUGIN_BASENAME', plugin_basename( THEMEMY_PLUGIN_FILE ) );
 define( 'THEMEMY_PLUGIN_DIR', plugin_dir_path( THEMEMY_PLUGIN_FILE ) );
 define( 'THEMEMY_PLUGIN_URL', plugin_dir_url( THEMEMY_PLUGIN_FILE ) );
 
+include( THEMEMY_PLUGIN_DIR . 'api.php' );
 include( THEMEMY_PLUGIN_DIR . 'branding.php' );
+include( THEMEMY_PLUGIN_DIR . 'invitations.php' );
+include( THEMEMY_PLUGIN_DIR . 'orders.php' );
+

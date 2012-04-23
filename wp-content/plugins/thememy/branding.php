@@ -70,3 +70,59 @@ function thememy_analytics() {
 }
 add_action( 'wp_head', 'thememy_analytics' );
 
+/**
+ * Change default email sender
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_mail_from( $from_email ) {
+	if ( strpos( $from_email, 'wordpress' ) === 0 ) {
+		$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+
+		if ( substr( $sitename, 0, 4 ) == 'www.' )
+			$sitename = substr( $sitename, 4 );
+
+		$from_email = 'no-reply@' . $sitename;
+	}
+
+	return $from_email;
+}
+add_filter( 'wp_mail_from', 'thememy_mail_from' );
+
+/**
+ * Change default email sender name
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_mail_from_name( $from_name ){
+	if ( 'WordPress' == $from_name )
+		$from_name = get_option( 'blogname' );
+
+	return $from_name;
+}
+add_filter( 'wp_mail_from_name', 'thememy_mail_from_name' );
+
+/**
+ * Use SMTP to send emails
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_phpmailer_init( $phpmailer ) {
+	if ( ! defined( 'SMTP_HOST' ) )
+		return;
+
+	$phpmailer->IsSMTP();
+	$phpmailer->Host = SMTP_HOST;
+	$phpmailer->Port = defined( 'SMTP_PORT' ) ? SMTP_PORT : 25;
+	if ( defined( 'SMTP_USER' ) ) {
+		$phpmailer->SMTPAuth = true;
+		$phpmailer->Username = SMTP_USER;
+		$phpmailer->Password = defined( 'SMTP_PASSWORD' ) ? SMTP_PASSWORD : '';
+	}
+	if ( defined( 'SMTP_SECURE' ) )
+		$phpmailer->SMTPSecure = SMTP_SECURE;
+	if ( defined( 'SMTP_DEBUG' ) && SMTP_DEBUG )
+		$phpmailer->SMTPDebug = true;
+}
+add_action( 'phpmailer_init', 'thememy_phpmailer_init' );
+

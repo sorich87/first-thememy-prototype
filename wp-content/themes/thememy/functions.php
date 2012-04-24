@@ -415,33 +415,6 @@ function thememy_user_signup() {
 add_action( 'template_redirect', 'thememy_user_signup' );
 
 /**
- * Save user settings
- *
- * @since ThemeMY! 0.1
- */
-function thememy_save_settings() {
-	if ( ! is_page( 'settings' ) || empty( $_POST ) )
-		return;
-
-	$data = stripslashes_deep( $_POST );
-
-	if ( empty( $data['business-name'] ) || empty( $data['business-email'] )
-		|| empty( $data['price-one'] ) || empty( $data['price-all'] )
-		|| empty( $data['paypal-email'] ) ) {
-		wp_redirect( site_url( 'settings/?message=2' ) );
-		exit;
-	}
-
-	$user_id = get_current_user_id();
-
-	update_user_meta( $user_id, '_thememy_settings', $data );
-
-	wp_redirect( add_query_arg( 'message', '1' ) );
-	exit;
-}
-add_action( 'template_redirect', 'thememy_save_settings' );
-
-/**
  * Get settings array
  *
  * @since ThemeMY! 0.1

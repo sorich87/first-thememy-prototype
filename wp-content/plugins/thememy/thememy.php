@@ -31,4 +31,5 @@ include( THEMEMY_PLUGIN_DIR . 'api.php' );
 include( THEMEMY_PLUGIN_DIR . 'branding.php' );
 include( THEMEMY_PLUGIN_DIR . 'invitations.php' );
 include( THEMEMY_PLUGIN_DIR . 'orders.php' );
+include( THEMEMY_PLUGIN_DIR . 'settings.php' );
 

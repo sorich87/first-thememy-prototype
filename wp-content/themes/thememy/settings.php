@@ -23,20 +23,31 @@ get_header(); ?>
 		<h1><?php _e( 'Your Store Settings' ); ?></h1>
 	</div>
 
+	<?php if ( ! empty( $_GET['success'] ) ) : ?>
+		<div class="alert alert-success">
+			<?php _e( 'Settings saved.' ); ?>
+		</div>
+	<?php endif; ?>
+
 	<?php if ( isset( $_GET['message'] ) ) : ?>
-		<?php if ( '1' == $_GET['message'] ) : ?>
-			<div class="alert alert-success">
-				<?php _e( 'Settings saved.' ); ?>
-			</div>
-		<?php elseif( '2' == $_GET['message'] ) : ?>
-			<div class="alert alert-error">
-				<?php _e( 'Your changes were not saved. Please fill in all the required fields.' ); ?>
-			</div>
-		<?php endif; ?>
+		<div class="alert alert-error">
+			<?php
+			switch ( $_GET['message'] ) {
+				case '1' :
+					_e( 'Your changes were not saved. Please fill in all the required fields.' );
+					break;
+
+				case '2' :
+					_e( 'Please enter your email address to confirm account deletion.' );
+					break;
+			}
+			?>
+		</div>
 	<?php endif; ?>
 
 	<form class="form-horizontal" method="post">
-		<?php wp_get_referer(); ?>
+		<?php wp_nonce_field( 'save-settings', 'thememy_nonce' ); ?>
+		<input type="hidden" name="action" value="save-settings" />
 
 		<p><?php _e( 'Fill out the details on all the three tabs below.' ); ?></p>
 
@@ -155,5 +166,11 @@ get_header(); ?>
 			</button>
 		</div>
 	</form>
+
+	<div class="well">
+		<h3><?php _e( 'Delete Account' ); ?></h3>
+		<p><?php _e( 'Do you want to delete your account and all your data?' ); ?></p>
+		<p><a data-toggle="modal" class="btn btn-danger" href="#delete-account"><?php _e( 'Yes, delete my account' ); ?></a></p>
+	</div>
 
 <?php get_footer(); ?>

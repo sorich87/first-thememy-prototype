@@ -415,20 +415,6 @@ function thememy_user_signup() {
 add_action( 'template_redirect', 'thememy_user_signup' );
 
 /**
- * Get settings array
- *
- * @since ThemeMY! 0.1
- *
- * @param int $author_id Author ID
- */
-function thememy_get_settings( $author_id = null ) {
-	if ( ! $author_id )
-		$author_id = get_current_user_id();
-
-	return get_user_meta( $author_id, '_thememy_settings', true );
-}
-
-/**
  * Register log post type
  *
  * @since ThemeMY! 0.1

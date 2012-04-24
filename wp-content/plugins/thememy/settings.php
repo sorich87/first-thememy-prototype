@@ -97,3 +97,18 @@ function thememy_save_settings() {
 	}
 }
 add_action( 'template_redirect', 'thememy_save_settings' );
+
+/**
+ * Get settings array
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $author_id Author ID
+ */
+function thememy_get_settings( $author_id = null ) {
+	if ( ! $author_id )
+		$author_id = get_current_user_id();
+
+	return get_user_meta( $author_id, '_thememy_settings', true );
+}
+

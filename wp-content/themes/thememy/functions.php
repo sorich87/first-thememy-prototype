@@ -110,9 +110,18 @@ function thememy_scripts() {
 
 	global $post;
 
+	$debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+
 	wp_enqueue_style( 'style', get_stylesheet_uri() );
-	wp_enqueue_style( 'bootstrap', get_template_directory_uri() . '/assets/css/bootstrap.css' );
-	wp_enqueue_style( 'bootstrap-reponsive', get_template_directory_uri() . '/assets/css/bootstrap-responsive.css' );
+
+	if ( $debug ) {
+		wp_enqueue_style( 'bootstrap', get_template_directory_uri() . '/assets/less/bootstrap.less' );
+		wp_enqueue_style( 'bootstrap-reponsive', get_template_directory_uri() . '/assets/less/responsive.less' );
+		wp_enqueue_script( 'less', get_template_directory_uri() . '/assets/less/less-1.3.0.min.js' );
+	} else {
+		wp_enqueue_style( 'bootstrap', get_template_directory_uri() . '/assets/css/bootstrap.min.css', false, 201204241 );
+		wp_enqueue_style( 'bootstrap-reponsive', get_template_directory_uri() . '/assets/css/bootstrap-responsive.min.css', false, 201204241 );
+	}
 
 	wp_enqueue_script( 'jquery' );
 
@@ -131,6 +140,32 @@ function thememy_scripts() {
 		wp_enqueue_script( 'keyboard-image-navigation', get_template_directory_uri() . '/js/keyboard-image-navigation.js', array( 'jquery' ), '20120202' );
 }
 add_action( 'wp_enqueue_scripts', 'thememy_scripts' );
+
+/**
+ * Set less scripts rel tag
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_less_loader_tag( $tag, $handle ) {
+	if ( ! defined( 'SCRIPT_DEBUG' ) || ! SCRIPT_DEBUG )
+		return $tag;
+
+	global $wp_styles;
+
+	if ( ! preg_match( '/\.less$/U', $wp_styles->registered[$handle]->src ) )
+		return $tag;
+
+	$handle = $wp_styles->registered[$handle]->handle;
+	$media = $wp_styles->registered[$handle]->args;
+	$href = $wp_styles->registered[$handle]->src;
+	if ( $wp_styles->registered[$handle]->ver )
+		$href .= '?ver=' . $wp_styles->registered[$handle]->ver;
+	$rel = isset($wp_styles->registered[$handle]->extra['alt']) && $wp_styles->registered[$handle]->extra['alt'] ? 'alternate stylesheet/less' : 'stylesheet/less';
+	$title = isset($wp_styles->registered[$handle]->extra['title']) ? "title='" . esc_attr( $wp_styles->registered[$handle]->extra['title'] ) . "'" : '';
+
+	return "<link rel='$rel' id='$handle-less' $title href='$href' type='text/css' media='$media' />";
+}
+add_filter( 'style_loader_tag', 'thememy_less_loader_tag', 10, 2 );
 
 /**
  * Add Getting Started modal

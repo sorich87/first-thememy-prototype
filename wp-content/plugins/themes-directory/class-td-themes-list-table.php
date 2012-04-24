@@ -79,14 +79,14 @@ class TD_Themes_List_Table extends WP_List_Table {
 
 	<div class="available-theme">
 		<a href="<?php echo $edit_link; ?>" class="screenshot">
-			<?php echo td_get_screenshot( $theme->ID ); ?>
+			<?php echo thememy_get_screenshot( $theme->ID ); ?>
 		</a>
 
 		<h4>
 		<?php printf(
 			__( '%1$s %2$s by %3$s' ),
 			$title,
-			td_get_current_version( $theme->ID ),
+			thememy_get_current_version( $theme->ID ),
 			'<a href="' . esc_url( add_query_arg( 'author', $author->ID, admin_url( 'admin.php?page=td-admin' ) ) ) . '">' . $author->display_name . '</a>'
 		); ?>
 		</h4>

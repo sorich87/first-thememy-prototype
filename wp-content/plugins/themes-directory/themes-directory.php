@@ -72,8 +72,6 @@ class Themes_Directory {
 	 * @since 0.1
 	 */
 	private function includes() {
-		include( $this->plugin_dir . 'template-tags.php' );
-
 		if ( is_admin() )
 			include( $this->plugin_dir . 'td-admin.php' );
 	}

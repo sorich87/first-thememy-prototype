@@ -36,7 +36,7 @@ get_header(); ?>
 		<?php $theme = get_post( get_post_meta( $order->ID, '_thememy_item', true ) ); ?>
 		<dl>
 			<dt><?php echo $theme->post_title; ?></dt>
-			<dd><a href="<?php echo td_get_download_link( $theme->ID ); ?>"><?php _e( 'download' ); ?></a></dd>
+			<dd><a href="<?php echo thememy_get_download_link( $theme->ID ); ?>"><?php _e( 'download' ); ?></a></dd>
 		</dl>
 	</div>
 

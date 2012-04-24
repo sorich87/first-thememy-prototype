@@ -18,6 +18,12 @@ get_header(); ?>
 		</div>
 	<?php endif; ?>
 
+	<?php if ( isset( $_GET['deleted'] ) ) : ?>
+		<div class="alert alert-success">
+			<?php _e( 'Theme successfully deleted.' ); ?>
+		</div>
+	<?php endif; ?>
+
 	<?php $settings = thememy_get_settings(); ?>
 
 	<?php if ( ! $settings ) : ?>
@@ -35,7 +41,7 @@ get_header(); ?>
 		<fieldset>
 			<legend><?php _e( 'Upload a new theme' ); ?></legend>
 			<div class="control-group">
-				<label class="control-label" for="input01">Upload zip archive</label>
+			<label class="control-label" for="input01"><?php _e( 'Upload zip archive' ); ?></label>
 				<div class="controls">
 					<input type="file" class="input-file" id="theme-upload" name="themezip">
 					<p class="help-block"><?php _e( 'If you previouly uploaded a theme with the same name, it will be replaced.' ); ?></p>
@@ -45,7 +51,7 @@ get_header(); ?>
 				<div class="controls">
 					<button type="submit" class="btn btn-primary">
 						<i class="icon-white icon-upload"></i>
-						Upload
+						<?php _e( 'Upload' ); ?>
 					</button>
 				</div>
 			</div>
@@ -61,10 +67,11 @@ get_header(); ?>
 
 		<li class="span3">
 			<div class="thumbnail">
-				<?php td_screenshot(); ?>
+				<?php thememy_screenshot(); ?>
 				<div class="caption">
 					<h4><?php the_title(); ?></h4>
-					<pre><?php td_purchase_link(); ?></pre>
+					<pre><?php thememy_purchase_link(); ?></pre>
+					<p><a href="<?php thememy_delete_link(); ?>" class="btn btn-danger"><?php _e( 'delete' ); ?></a></p>
 				</div>
 			</div>
 		</li>
@@ -76,7 +83,7 @@ get_header(); ?>
 <?php /*
 		<div>
 			<h3><?php _e( 'Global Purchase Link' ); ?></h3>
-			<pre><?php td_global_purchase_link(); ?></pre>
+			<pre><?php thememy_global_purchase_link(); ?></pre>
 			</div>
 */ ?>
 

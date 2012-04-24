@@ -187,5 +187,31 @@ function thememy_delete_link() {
 function thememy_get_delete_link( $theme_id = null ) {
 	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
 
-	return add_query_arg( 'delete', $theme_id, site_url( 'themes/' ) );
+	$link = trailingslashit( get_permalink( $theme_id ) ) . 'delete/';
+
+	return wp_nonce_url( $link, "delete-theme-$theme_id" );
 }
+
+/**
+ * Display theme edit link
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_edit_link() {
+	echo thememy_get_edit_link();
+}
+
+/**
+ * Return edit link for one theme
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $theme_id Theme ID
+ * @return string Theme delete link
+ */
+function thememy_get_edit_link( $theme_id = null ) {
+	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
+
+	return trailingslashit( get_permalink( $theme_id ) ) . 'edit/';
+}
+

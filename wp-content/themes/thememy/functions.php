@@ -127,6 +127,7 @@ function thememy_scripts() {
 
 	wp_enqueue_script( 'small-menu', get_template_directory_uri() . '/js/small-menu.js', 'jquery', '20120206', true );
 
+	wp_enqueue_script( 'bootstrap-collapse', get_template_directory_uri() . '/assets/js/bootstrap-collapse.js', 'jquery', 201204241, true );
 	wp_enqueue_script( 'bootstrap-modal', get_template_directory_uri() . '/assets/js/bootstrap-modal.js', 'jquery', '20120416', true );
 	wp_enqueue_script( 'bootstrap-tab', get_template_directory_uri() . '/assets/js/bootstrap-tab.js', 'jquery', '20120412', true );
 
@@ -556,19 +557,6 @@ add_action( 'template_redirect', 'thememy_install_request' );
 function thememy_plugin_download_link() {
 	echo site_url( 'thememy.zip' );
 }
-
-/**
- * Alter themes archive page query var by restricting to current user themes
- *
- * @since ThemeMY! 0.1
- */
-function thememy_pre_get_posts( $query ) {
-	if ( ! is_post_type_archive( 'td_theme' ) )
-		return;
-
-	$query->query_vars['author'] = get_current_user_id();
-}
-add_action( 'pre_get_posts', 'thememy_pre_get_posts' );
 
 /**
  * Don't allow direct access to upload directory

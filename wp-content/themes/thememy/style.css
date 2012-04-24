@@ -65,6 +65,6 @@ body.home {
 }
 
 /* Themes archive */
-.post-type-archive-td_theme .thumbnail {
-	height: 320px;
+.page-template-themes-page-php .thumbnail {
+	min-height: 250px;
 }

@@ -113,11 +113,10 @@ class Themes_Directory {
 		);
 		$args = array(
 			'description'  => __( 'Themes directory pages' ),
-			'has_archive'  => true,
 			'labels'       => $labels,
 			'public'       => true,
 			'map_meta_cap' => true,
-			'rewrite'      => array( 'slug' => 'themes' ),
+			'rewrite'      => array( 'slug' => 'theme' ),
 			'show_in_menu' => false,
 			'supports'     => array(
 				'author', 'comments', 'custom-fields',

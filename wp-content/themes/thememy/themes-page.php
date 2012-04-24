@@ -58,20 +58,41 @@ get_header(); ?>
 		</fieldset>
 	</form>
 
-	<?php if ( have_posts() ) : ?>
+	<?php
+	$args = array(
+		'post_type' => 'td_theme',
+		'author'    => get_current_user_id(),
+		'nopaging'  => true
+	);
+	$query = new WP_Query( $args );
+	?>
+
+	<?php if ( $query->have_posts() ) : ?>
 
 		<ul class="thumbnails">
 
 		<?php /* Start the Loop */ ?>
-		<?php while ( have_posts() ) : the_post(); ?>
+		<?php while ( $query->have_posts() ) : $query->the_post(); ?>
 
 		<li class="span3">
 			<div class="thumbnail">
 				<?php thememy_screenshot(); ?>
 				<div class="caption">
-					<h4><?php the_title(); ?></h4>
-					<pre><?php thememy_purchase_link(); ?></pre>
-					<p><a href="<?php thememy_delete_link(); ?>" class="btn btn-danger"><?php _e( 'delete' ); ?></a></p>
+					<h4>
+						<?php the_title(); ?>
+						<?php thememy_current_version(); ?>
+						<a class="small" data-toggle="collapse" data-target="#theme-details-<?php the_ID(); ?>"><?php _e( '(details)' ); ?></a>
+					</h4>
+					<div class="collapse" id="theme-details-<?php the_ID(); ?>">
+						<p>
+							<a href="<?php thememy_edit_link(); ?>"><?php _e( 'edit' ); ?></a>
+							<a href="<?php thememy_delete_link(); ?>" class="alert-danger"><?php _e( 'delete' ); ?></a>
+						</p>
+						<p><b><?php _e( 'Landing page' ); ?></b></p>
+						<pre><?php the_permalink(); ?></pre>
+						<p><b><?php _e( 'Buy now button' ); ?></b></p>
+						<pre>buy now</pre>
+					</div>
 				</div>
 			</div>
 		</li>
@@ -79,13 +100,6 @@ get_header(); ?>
 		<?php endwhile; ?>
 
 		</ul>
-
-<?php /*
-		<div>
-			<h3><?php _e( 'Global Purchase Link' ); ?></h3>
-			<pre><?php thememy_global_purchase_link(); ?></pre>
-			</div>
-*/ ?>
 
 	<?php elseif ( current_user_can( 'edit_posts' ) ) : ?>
 

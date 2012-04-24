@@ -57,7 +57,7 @@
 					</a>
 					<?php if ( is_user_logged_in() ) : ?>
 					<ul class="nav">
-						<li<?php if ( is_post_type_archive( 'td_theme' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'themes/' ); ?>"><?php _e( 'Themes' ); ?></a></li>
+						<li<?php if ( is_page( 'themes' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'themes/' ); ?>"><?php _e( 'Themes' ); ?></a></li>
 						<li<?php if ( is_page( 'reports' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'reports/' ); ?>"><?php _e( 'Reports' ); ?></a></li>
 						<li<?php if ( is_page( 'settings' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'settings/' ); ?>"><?php _e( 'Settings' ); ?></a></li>
 						<li<?php if ( is_page( 'feedback' ) ) echo ' class="active"'; ?>><a href="<?php echo site_url( 'feedback/' ); ?>"><?php _e( 'Feedback' ); ?></a></li>

@@ -29,7 +29,7 @@
 		); ?></p>
 
 		<h4><?php _e( 'Step 3' ); ?></h4>
-		<p><?php _e( 'Copy the themes purchase links and paste them in your website.' ); ?></p>
+		<p><?php _e( 'Share the theme landing pages with your website visitors or on social medias.' ); ?></p>
   </div>
   <div class="modal-footer">
 		<a href="#" class="btn" data-dismiss="modal"><?php _e( 'Close' ); ?></a>

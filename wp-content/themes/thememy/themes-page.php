@@ -12,9 +12,9 @@ get_header(); ?>
 		<h1><?php _e( 'Your Themes' ); ?></h1>
 	</div>
 
-	<?php if ( isset( $_GET['message'] ) && '1' == $_GET['message'] ) : ?>
-		<div class="alert alert-success">
-			<?php _e( 'Theme successfully uploaded.' ); ?>
+	<?php if ( isset( $_GET['message'] ) ) : ?>
+		<div class="alert alert-error">
+			<?php thememy_upload_error_message(); ?>
 		</div>
 	<?php endif; ?>
 

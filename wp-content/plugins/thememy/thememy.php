@@ -34,4 +34,5 @@ include( THEMEMY_PLUGIN_DIR . 'orders.php' );
 include( THEMEMY_PLUGIN_DIR . 'settings.php' );
 include( THEMEMY_PLUGIN_DIR . 'template-tags.php' );
 include( THEMEMY_PLUGIN_DIR . 'themes.php' );
+include( THEMEMY_PLUGIN_DIR . 'user.php' );
 

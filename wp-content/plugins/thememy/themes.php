@@ -78,3 +78,34 @@ function thememy_theme_query_vars( $vars ) {
 }
 add_filter( 'request', 'thememy_theme_query_vars' );
 
+/**
+ * Display theme upload error message
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_upload_error_message() {
+	if ( isset( $_GET['message'] ) ) {
+		switch ( $_GET['message'] ) {
+			case '2' :
+				_e( 'File upload error' );
+				break;
+
+			case '3' :
+				_e( 'Error extracting the archive content' );
+				break;
+
+			case '4' :
+				_e( 'Error reading the theme data' );
+				break;
+
+			case '5' :
+				_e( 'Error updating the theme data' );
+				break;
+
+			case '6' :
+				_e( 'Error saving the file' );
+				break;
+		}
+	}
+}
+

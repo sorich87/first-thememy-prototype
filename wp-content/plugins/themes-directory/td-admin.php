@@ -22,9 +22,6 @@ class TD_Admin {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'upload_handler' ) );
-
-		// Hacky way to add the theme name to the theme edit screen by closing the form tag early
-		add_action( 'post_edit_form_tag', array( __CLASS__, 'theme_name_tag' ) );
 	}
 
 	/**
@@ -38,34 +35,6 @@ class TD_Admin {
 	}
 
 	/**
-	 * Add theme title to the post edit screen
-	 *
-	 * @package Themes_Directory
-	 * @since 0.1
-	 */
-	public static function theme_name_tag() {
-		global $post_ID;
-
-		if ( 'td_theme' != get_current_screen()->id )
-			return;
-
-		$post = get_post( $post_ID );
-
-		// Close form tag
-		echo '><div>';
-
-		echo '<h3>' . get_the_title( $post_ID ) . '</h3>';
-		echo apply_filters( 'get_the_excerpt', $post->post_excerpt );
-
-		// Hidden input so that the title and excerpt are not overwritten by empty values on autosave
-		echo '<input type="hidden" name="post_title" value="' . format_to_edit( $post->post_title ) . '" id="title" />';
-		echo '<textarea class="hidden" name="excerpt" id="excerpt">' . format_to_edit( $post->post_excerpt ) . '</textarea>';
-
-		// Leave the last sign so that the WordPress one is used
-		echo '</div';
-	}
-
-	/**
 	 * Display admin page content
 	 *
 	 * @package Themes_Directory
@@ -74,63 +43,11 @@ class TD_Admin {
 	public static function admin_page() {
 		if ( ! current_user_can( 'edit_posts' ) )
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
-
-		if ( isset( $_GET['message'] ) ) {
-			$message = $_GET['message'];
-
-			if ( '1' == $message )
-				$message = __( 'Theme uploaded' );
-
-			elseif ( '2' == $message )
-				$message = __( 'File upload error' );
-
-			elseif ( '3' == $message )
-				$message = __( 'Error extracting the archive content' );
-
-			elseif ( '4' == $message )
-				$message = __( 'Error reading the theme data' );
-
-			elseif ( '5' == $message )
-				$message = __( 'Error updating the theme data' );
-
-			elseif ( '6' == $message )
-				$message = __( 'Error saving the file' );
-
-			if ( isset( $message ) )
-				echo "<div id='message' class='updated'><p><strong>$message</strong></p></div>";
-		}
 ?>
 <div class="wrap">
 	<h2><?php _e( 'Themes Directory' ); ?></h2>
-	<?php self::upload_form(); ?>
-	<br class="clear" />
 	<?php self::themes_list(); ?>
 </div>
-<?php
-	}
-
-	/**
-	 * Display upload form
-	 *
-	 * @todo: Create functions to actually handle the upload via both html uploader and pupload.
-	 *
-	 * @package Themes_Directory
-	 * @since 0.1
-	 */
-	public static function upload_form() {
-		global $is_iphone;
-
-		if ( $is_iphone )
-			return;
-?>
-<h3><?php _e( 'Upload a theme in .zip format' ); ?></h3>
-<p><?php _e( 'If the file matches an existing theme, it will be added as a new version of that theme. If not, a new theme will be created.' ); ?></p>
-<form enctype="multipart/form-data" method="post" action="">
-	<?php wp_nonce_field( 'td-theme-upload' ); ?>
-	<label class="screen-reader-text" for="themezip"><?php _e( 'Theme zip file' ); ?></label>
-	<input type="file" id="td-themezip" name="themezip" />
-	<input type="submit" class="button" value="<?php esc_attr_e( 'Upload Now' ); ?>" />
-</form>
 <?php
 	}
 
@@ -221,7 +138,7 @@ class TD_Admin {
 
 		$wp_filesystem->rmdir( $temp_dir, true );
 
-		wp_redirect( add_query_arg( 'message', '1', $referer ) );
+		wp_redirect( thememy_get_edit_link( $theme_id ) );
 		exit;
 	}
 

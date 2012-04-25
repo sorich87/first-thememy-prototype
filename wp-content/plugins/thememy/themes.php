@@ -57,6 +57,7 @@ add_filter( 'single_template', 'thememy_theme_edit_template' );
  * @since ThemeMY! 0.1
  */
 function thememy_add_rewrite_endpoints() {
+	add_rewrite_endpoint( 'buy', EP_PERMALINK );
 	add_rewrite_endpoint( 'delete', EP_PERMALINK );
 	add_rewrite_endpoint( 'edit', EP_PERMALINK );
 }
@@ -68,6 +69,9 @@ add_action( 'init', 'thememy_add_rewrite_endpoints' );
  * @since ThemeMY! 0.1
  */
 function thememy_theme_query_vars( $vars ) {
+	if ( isset( $vars['buy'] ) )
+		$vars['buy'] = true;
+
 	if ( isset( $vars['delete'] ) )
 		$vars['delete'] = true;
 

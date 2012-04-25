@@ -6,10 +6,10 @@
  * @since ThemeMY! 0.1
  */
 function thememy_redirect_to_paypal() {
-	if ( ! is_front_page() || empty( $_GET['buy'] ) )
+	if ( ! is_singular() || get_post_type() != 'td_theme' || ! get_query_var( 'buy' ) )
 		return;
 
-	$theme = get_post( $_GET['buy'] );
+	$theme = get_queried_object();
 	$settings = thememy_get_settings( $theme->post_author );
 	
 	if ( empty( $settings ) )

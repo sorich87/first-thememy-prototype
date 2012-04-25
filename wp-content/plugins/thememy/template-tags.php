@@ -112,7 +112,7 @@ function thememy_purchase_link() {
 function thememy_get_purchase_link( $theme_id = null ) {
 	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
 
-	return add_query_arg( 'buy', $theme_id, site_url( '/' ) );
+	return trailingslashit( get_permalink( $theme_id ) ) . 'buy/';
 }
 
 /**

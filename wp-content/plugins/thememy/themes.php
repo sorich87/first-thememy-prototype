@@ -198,3 +198,84 @@ function thememy_mod_rewrite_rules( $rules ) {
 }
 add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
 
+/**
+ * Save theme slug
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_theme_slug_save() {
+	check_ajax_referer( 'thememy-save-theme-slug' );
+
+	$data = stripslashes_deep( $_POST );
+	$theme_id = $data['theme_id'];
+	$theme_slug = $data['theme_slug'];
+
+	if ( $theme_slug != wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'td_theme', 0 ) )
+		exit('exists');
+
+	$theme = get_post( $theme_id );
+	$theme->post_name = $theme_slug;
+
+	if ( ! wp_update_post( $theme ) )
+		exit('error');
+
+	exit('complete');
+}
+add_action( 'wp_ajax_thememy-save-theme-slug', 'thememy_theme_slug_save' );
+
+/**
+ * Enqueue theme upload script
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_enqueue_plupload() {
+	if ( ! is_singular() || get_post_type() != 'td_theme' || ! get_query_var( 'edit' ) )
+		return;
+
+	wp_enqueue_script( 'plupload-all' );
+
+	wp_enqueue_script( 'thememy_plupload', THEMEMY_PLUGIN_URL . 'js/thememy-plupload.js', array( 'jquery' ), 201204254 );
+
+	$plupload_init = array(
+		'runtimes' => 'html5,silverlight,flash,html4',
+		'browse_button' => 'plupload-browse-button',
+		'file_data_name' => 'async-upload',
+		'multiple_queues' => true,
+		'max_file_size' => '1mb',
+		'url' => admin_url( 'admin-ajax.php' ),
+		'flash_swf_url' => includes_url( 'js/plupload/plupload.flash.swf' ),
+		'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
+		'filters' => array(
+			array(
+				'title' => __( 'Allowed Files' ),
+				'extensions' => 'gif,jpg,jpeg,png'
+			)
+		),
+		'multipart' => true,
+		'urlstream_upload' => true,
+		'multipart_params' => array(
+			'_ajax_nonce' => wp_create_nonce( 'theme-image-upload' ),
+			'action' => 'theme_image_upload',
+			'theme_id' => get_the_ID()
+		)
+	);
+	wp_localize_script( 'thememy_plupload', 'thememyPlupload', $plupload_init );
+}
+add_action( 'wp_enqueue_scripts', 'thememy_enqueue_plupload' );
+
+/**
+ * Handle theme image upload
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_image_upload() {
+	check_ajax_referer( 'theme-image-upload' );
+
+	$image_id = media_handle_upload( 'async-upload', $_POST['theme_id'], array(), array( 'test_form' => false, 'action' => 'theme_image_upload' ) );
+
+	if ( ! is_wp_error( $image_id ) )
+		echo wp_get_attachment_image( $image_id, 'post-thumbnail' );
+	exit;
+}
+add_action('wp_ajax_theme_image_upload', "thememy_image_upload");
+

@@ -109,3 +109,92 @@ function thememy_upload_error_message() {
 	}
 }
 
+/**
+ * Assign theme to a buyer profile
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param string $email Buyer email
+ * @param int $theme_id Theme ID
+ */
+function thememy_assign_theme( $email, $theme_id ) {
+	$buyer_id = get_user_by( 'email', $email )->ID;
+
+	if ( ! $buyer_id )
+		$buyer_id = wp_create_user( wp_hash( $email ), wp_generate_password(), $email );
+
+	$themes = thememy_get_themes( $buyer_id );
+
+	if ( ! in_array( $theme_id, $themes ) )
+		add_user_meta( $buyer_id, '_thememy_themes', $theme_id );
+}
+
+/**
+ * Get all the themes assigned to a buyer
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $buyer Buyer email or ID
+ */
+function thememy_get_themes( $buyer ) {
+	if ( is_int( $buyer ) )
+		$buyer_id = $buyer;
+	elseif ( is_email( $buyer ) )
+		$buyer_id = get_user_by( 'email', $buyer )->ID;
+	else
+		return;
+
+	return get_user_meta( $buyer_id, '_thememy_themes' );
+}
+
+/**
+ * Serve private files for download from S3
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_get_attachment_url( $url, $post_id ) {
+	if ( get_post_meta( $post_id, '_s3_acl', true ) != 'authenticated-read' )
+		return $url;
+
+	require_once( WP_PLUGIN_DIR . '/tantan-s3/wordpress-s3/lib.s3.php' );
+
+	$s3_config = get_option('tantan_wordpress_s3');
+
+	if ( $s3_config['wp-uploads'] && ( $amazon = get_post_meta( $post_id, 'amazonS3_info', true ) ) ) {
+		$domain = ! empty( $s3_config['virtual-host'] ) ? $amazon['bucket'] : "{$amazon['bucket']}.s3.amazonaws.com";
+
+		$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
+
+		$expires = strtotime( '+1 day' );
+		$string_to_sign = "GET\n\n\n$expires\n/{$amazon['bucket']}/{$amazon['key']}";
+		$signature = $s3->constructSig( $string_to_sign );
+
+		$url = add_query_arg( array(
+			'AWSAccessKeyId' => $s3_config['key'],
+			'Expires'        => $expires,
+			'Signature'      => urlencode( $signature )
+		), "http://{$domain}/{$amazon['key']}" );
+
+		return $url;
+	}
+
+	return $url;
+}
+add_action( 'wp_get_attachment_url', 'thememy_get_attachment_url', 10, 2 );
+
+/**
+ * Don't allow direct access to upload directory
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_mod_rewrite_rules( $rules ) {
+	$rules = str_replace(
+		"\nRewriteRule ^index\.php$ - [L]\n",
+		"\nRewriteRule ^wp-content/uploads/ - [R=404,L,NC]\nRewriteRule ^index\.php$ - [L]\n",
+		$rules
+	);
+
+	return $rules;
+}
+add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
+

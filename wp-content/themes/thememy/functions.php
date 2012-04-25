@@ -171,52 +171,6 @@ add_filter( 'style_loader_tag', 'thememy_less_loader_tag', 10, 2 );
 //require( get_template_directory() . '/inc/custom-header.php' );
 
 /**
- * Don't show front page to logged-in users
- * Show front page only to non logged-in users
- *
- * @since ThemeMY! 0.1
- */
-function thememy_restrict_pages() {
-	if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
-		if ( ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) )
-	 		|| is_page_template( 'signup-page.php' )	) {
-			wp_redirect( site_url( 'themes/' ) );
-			exit;
-		}
-
-	} else {
-		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'survey-page.php' )
-			&& ! is_page_template( 'download-page.php' ) && ! is_page_template( 'signup-page.php' )
-			&& ! is_page( 'api' ) && ! is_page( 'ipn' ) ) {
-			wp_redirect( home_url( '/' ) );
-			exit;
-		}
-	}
-}
-add_action( 'template_redirect', 'thememy_restrict_pages' );
-
-/**
- * Restrict admin pages from authors, contributors and subscribers
- *
- * @since ThemeMY! 0.1
- */
-function thememy_restrict_admin() {
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX )
-		return;
-
-	if ( current_user_can( 'edit_others_posts' ) )
-		return;
-
-	global $plugin_page;
-
-	if ( 'td-admin' != $plugin_page || empty( $_FILES['themezip'] ) ) {
-		wp_redirect( site_url( 'themes/' ) );
-		exit;
-	}
-}
-add_action( 'admin_init', 'thememy_restrict_admin' );
-
-/**
  * Send feedback to site admin
  *
  * @since ThemeMY! 0.1
@@ -266,60 +220,6 @@ function thememy_send_survey() {
 add_action( 'template_redirect', 'thememy_send_survey' );
 
 /**
- * Create a new user account
- *
- * @since ThemeMY! 0.1
- */
-function thememy_user_signup() {
-	if ( ! is_page_template( 'signup-page.php' ) || empty( $_POST ) )
-		return;
-
-	$data = stripslashes_deep( $_POST );
-
-	$first_name  = isset( $_POST['first_name'] ) ? $_POST['first_name'] : '';
-	$last_name   = isset( $_POST['last_name'] ) ? $_POST['last_name'] : '';
-	$user_email  = isset( $_POST['user_email'] ) ? $_POST['user_email'] : '';
-	$user_pass   = isset( $_POST['user_pass'] ) ? $_POST['user_pass'] : '';
-	$user_pass_2 = isset( $_POST['user_pass_2'] ) ? $_POST['user_pass_2'] : '';
-
-	$redirect_to = add_query_arg( array(
-		'first_name' => $first_name,
-		'last_name' => $last_name,
-		'user_email' => $user_email
-	) );
-
-	if ( ! $first_name || ! $last_name || ! $user_email || ! $user_pass || ! $user_pass_2 ) {
-		wp_redirect( add_query_arg( 'message', '1', $redirect_to ) );
-		exit;
-	}
-
-	if ( ! is_email( $user_email ) ) {
-		wp_redirect( add_query_arg( 'message', '2', remove_query_arg( 'user_email', $redirect_to ) ) );
-		exit;
-	}
-
-	if ( $user_pass != $user_pass_2 ) {
-		wp_redirect( add_query_arg( 'message', '3', $redirect_to ) );
-		exit;
-	}
-
-	$user_login = wp_hash( $user_email );
-	$display_name = "$first_name $last_name";
-	$role = 'author';
-
-	$args = compact( 'first_name', 'last_name', 'user_email', 'user_pass', 'user_login', 'display_name', 'role' );
-
-	$user_id = wp_insert_user( $args );
-
-	if ( is_wp_error( $user_id ) )
-		thememy_error( $user_id );
-
-	wp_redirect( add_query_arg( 'email', urlencode( $user_email ), site_url( "survey/" ) ) );
-	exit;
-}
-add_action( 'template_redirect', 'thememy_user_signup' );
-
-/**
  * Register log post type
  *
  * @since ThemeMY! 0.1
@@ -336,79 +236,6 @@ function thememy_log_post_type() {
 	register_post_type( 'thememy_log', $args );
 }
 add_action( 'init', 'thememy_log_post_type' );
-
-/**
- * Assign theme to a buyer profile
- *
- * @since ThemeMY! 0.1
- *
- * @param string $email Buyer email
- * @param int $theme_id Theme ID
- */
-function thememy_assign_theme( $email, $theme_id ) {
-	$buyer_id = get_user_by( 'email', $email )->ID;
-
-	if ( ! $buyer_id )
-		$buyer_id = wp_create_user( wp_hash( $email ), wp_generate_password(), $email );
-
-	$themes = thememy_get_themes( $buyer_id );
-
-	if ( ! in_array( $theme_id, $themes ) )
-		add_user_meta( $buyer_id, '_thememy_themes', $theme_id );
-}
-
-/**
- * Get all the themes assigned to a buyer
- *
- * @since ThemeMY! 0.1
- *
- * @param int $buyer Buyer email or ID
- */
-function thememy_get_themes( $buyer ) {
-	if ( is_int( $buyer ) )
-		$buyer_id = $buyer;
-	elseif ( is_email( $buyer ) )
-		$buyer_id = get_user_by( 'email', $buyer )->ID;
-	else
-		return;
-
-	return get_user_meta( $buyer_id, '_thememy_themes' );
-}
-
-/**
- * Serve private files for download from S3
- *
- * @since ThemeMY! 0.1
- */
-function thememy_get_attachment_url( $url, $post_id ) {
-	if ( get_post_meta( $post_id, '_s3_acl', true ) != 'authenticated-read' )
-		return $url;
-
-	require_once( WP_PLUGIN_DIR . '/tantan-s3/wordpress-s3/lib.s3.php' );
-
-	$s3_config = get_option('tantan_wordpress_s3');
-
-	if ( $s3_config['wp-uploads'] && ( $amazon = get_post_meta( $post_id, 'amazonS3_info', true ) ) ) {
-		$domain = ! empty( $s3_config['virtual-host'] ) ? $amazon['bucket'] : "{$amazon['bucket']}.s3.amazonaws.com";
-
-		$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
-
-		$expires = strtotime( '+1 day' );
-		$string_to_sign = "GET\n\n\n$expires\n/{$amazon['bucket']}/{$amazon['key']}";
-		$signature = $s3->constructSig( $string_to_sign );
-
-		$url = add_query_arg( array(
-			'AWSAccessKeyId' => $s3_config['key'],
-			'Expires'        => $expires,
-			'Signature'      => urlencode( $signature )
-		), "http://{$domain}/{$amazon['key']}" );
-
-		return $url;
-	}
-
-	return $url;
-}
-add_action( 'wp_get_attachment_url', 'thememy_get_attachment_url', 10, 2 );
 
 /**
  * Display error message and log error
@@ -461,36 +288,4 @@ add_action( 'template_redirect', 'thememy_install_request' );
 function thememy_plugin_download_link() {
 	echo site_url( 'thememy.zip' );
 }
-
-/**
- * Don't allow direct access to upload directory
- *
- * @since ThemeMY! 0.1
- */
-function thememy_mod_rewrite_rules( $rules ) {
-	$rules = str_replace(
-		"\nRewriteRule ^index\.php$ - [L]\n",
-		"\nRewriteRule ^wp-content/uploads/ - [R=404,L,NC]\nRewriteRule ^index\.php$ - [L]\n",
-		$rules
-	);
-
-	return $rules;
-}
-add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
-
-/**
- * Use email to authenticate users
- *
- * @since ThemeMY! 0.1
- */
-function thememy_authenticate( $user, $username, $password ) {
-	if ( ! empty( $username ) )
-		$user = get_user_by( 'email', $username );
-	if ( isset( $user->user_login, $user ) )
-		$username = $user->user_login;
-
-	return wp_authenticate_username_password( null, $username, $password );
-}
-remove_filter( 'authenticate', 'wp_authenticate_username_password', 20, 3 );
-add_filter( 'authenticate', 'thememy_authenticate', 20, 3 );
 

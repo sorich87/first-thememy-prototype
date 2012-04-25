@@ -138,7 +138,7 @@ class TD_Admin {
 
 		$wp_filesystem->rmdir( $temp_dir, true );
 
-		wp_redirect( thememy_get_edit_link( $theme_id ) );
+		wp_redirect( add_query_arg( 'success', 'true', thememy_get_edit_link( $theme_id ) ) );
 		exit;
 	}
 

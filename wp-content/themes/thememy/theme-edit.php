@@ -13,7 +13,10 @@ get_header(); ?>
 	<?php while ( have_posts() ) : the_post(); ?>
 
 	<div class="page-header">
-		<h1><?php echo get_the_title(); ?></h1>
+		<h1>
+			<?php echo get_the_title(); ?>
+			<a href="<?php echo site_url( 'themes/' ); ?>" class="btn btn-mini"><?php _e( 'Back to theme list' ); ?></a>
+		</h1>
 	</div>
 
 	<form class="well form-horizontal">

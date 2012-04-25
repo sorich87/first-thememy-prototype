@@ -5,14 +5,14 @@
  *
  * @since ThemeMY! 0.1
  */
-function thememy_delete_theme() {
+function thememy_theme_delete() {
 	if ( ! is_singular() || get_post_type() != 'td_theme' || ! get_query_var( 'delete' ) )
 		return;
 
 	$theme_id = get_the_ID();
 
 	if ( ! current_user_can( 'edit_post', $theme_id ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], "delete-theme-$theme_id" ) ) {
-		wp_redirect( site_url( 'themes/' ) );
+		wp_redirect( get_permalink() );
 		exit;
 	}
 
@@ -36,7 +36,20 @@ function thememy_delete_theme() {
 	wp_redirect( add_query_arg( 'deleted', $theme_id, site_url( 'themes/' ) ) );
 	exit;
 }
-add_action( 'template_redirect', 'thememy_delete_theme' );
+add_action( 'template_redirect', 'thememy_theme_delete' );
+
+/**
+ * Display theme edit page
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_theme_edit_template( $template ) {
+	if ( get_post_type() != 'td_theme' || ! get_query_var( 'edit' ) || ! current_user_can( 'edit_post', get_the_ID() ) )
+		return $template;
+
+	return locate_template( 'theme-edit.php' );
+}
+add_filter( 'single_template', 'thememy_theme_edit_template' );
 
 /**
  * Add delete and edit endpoints

@@ -81,17 +81,20 @@ get_header(); ?>
 					<h4>
 						<?php the_title(); ?>
 						<?php thememy_current_version(); ?>
-						<a class="small" data-toggle="collapse" data-target="#theme-details-<?php the_ID(); ?>"><?php _e( '(details)' ); ?></a>
 					</h4>
+					<hr />
+					<button class="btn btn-mini" data-toggle="collapse" data-target="#theme-details-<?php the_ID(); ?>">
+						<?php _e( 'theme details' ); ?>
+					</button>
+					<a class="btn btn-mini btn-danger delete-theme" href="<?php thememy_delete_link(); ?>"><?php _e( 'delete theme' ); ?></a>
 					<div class="collapse" id="theme-details-<?php the_ID(); ?>">
+						<hr />
+						<a class="close pull-right" data-toggle="collapse" data-target="#theme-details-<?php the_ID(); ?>">&times;</a>
 						<p>
-							<a href="<?php thememy_edit_link(); ?>"><?php _e( 'edit' ); ?></a>
-							<a href="<?php thememy_delete_link(); ?>" class="alert-danger"><?php _e( 'delete' ); ?></a>
+							<b><?php _e( 'Landing Page' ); ?></b>
+							<a href="<?php thememy_edit_link(); ?>">(<?php _e( 'edit' ); ?>)</a>
 						</p>
-						<p><b><?php _e( 'Landing page' ); ?></b></p>
-						<pre><?php the_permalink(); ?></pre>
-						<p><b><?php _e( 'Buy now button' ); ?></b></p>
-						<pre>buy now</pre>
+						<pre><a href="<?php the_permalink(); ?>"><?php the_permalink(); ?></a></pre>
 					</div>
 				</div>
 			</div>

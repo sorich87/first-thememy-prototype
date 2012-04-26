@@ -11,9 +11,9 @@ function thememy_api_theme_details( $theme_id ) {
 	if ( ! $theme )
 		return;
 
-	$theme_data = td_get_theme_data( $theme_id );
+	$theme_data = thememy_get_theme_data( $theme_id );
 
-	$versions = td_get_all_versions( $theme_id );
+	$versions = thememy_get_all_versions( $theme_id );
 	foreach ( $versions as $version => $version_data ) {
 		$versions[$version] = array(
 			'version'  => $version,
@@ -22,8 +22,8 @@ function thememy_api_theme_details( $theme_id ) {
 	}
 
 	$details = array(
-		'package'     => td_get_download_link( $theme_id ),
-		'new_version' => td_get_current_version( $theme_id ),
+		'package'     => thememy_get_download_link( $theme_id ),
+		'new_version' => thememy_get_current_version( $theme_id ),
 		'url'         => $theme_data['URI'],
 		'versions'    => $versions
 	);

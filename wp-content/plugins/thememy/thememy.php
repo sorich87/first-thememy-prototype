@@ -11,7 +11,7 @@ Author: ThemeMY!
 Version: 0.1
 Author URI: http://thememy.com/
 */
-/*  Copyright 2011 ThemeMY! All rights reserved
+/*  Copyright 2012 ThemeMY! All rights reserved
 
     This program is property of ThemeMY!. You don't have the right
 		to modify or redistribute it unless explicitly granted

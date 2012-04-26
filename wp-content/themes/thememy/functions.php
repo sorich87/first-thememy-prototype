@@ -120,6 +120,11 @@ function thememy_scripts() {
 		wp_enqueue_script( 'bootstrap-tab' );
 	}
 
+	if ( get_post_type() == 'theme' ) {
+		wp_enqueue_script( 'bootstrap-carousel' );
+		wp_enqueue_script( 'bootstrap-transition' );
+	}
+
 	wp_enqueue_style( 'style', get_stylesheet_uri(), false, 201204242 );
 
 	wp_enqueue_script( 'script', get_template_directory_uri() . '/script.js', 'jquery', 201204241, true );

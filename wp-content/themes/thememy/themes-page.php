@@ -36,8 +36,8 @@ get_header(); ?>
 		</div>
 	<?php endif; ?>
 
-	<form class="well form-horizontal" enctype="multipart/form-data" method="post" action="<?php echo admin_url( '?page=td-admin' ); ?>">
-		<?php wp_nonce_field( 'td-theme-upload' ); ?>
+	<form class="well form-horizontal" enctype="multipart/form-data" method="post" action="">
+		<?php wp_nonce_field( 'thememy-theme-upload' ); ?>
 		<fieldset>
 			<legend><?php _e( 'Upload a new theme' ); ?></legend>
 			<div class="control-group">
@@ -64,15 +64,15 @@ get_header(); ?>
 		'author'    => get_current_user_id(),
 		'nopaging'  => true
 	);
-	$query = new WP_Query( $args );
+	$themes_query = new WP_Query( $args );
 	?>
 
-	<?php if ( $query->have_posts() ) : ?>
+	<?php if ( $themes_query->have_posts() ) : ?>
 
 		<ul class="thumbnails">
 
 		<?php /* Start the Loop */ ?>
-		<?php while ( $query->have_posts() ) : $query->the_post(); ?>
+		<?php while ( $themes_query->have_posts() ) : $themes_query->the_post(); ?>
 
 		<li class="span3">
 			<div class="thumbnail">
@@ -110,6 +110,6 @@ get_header(); ?>
 			<?php _e( 'Dude, everybody is waiting in line to buy your themes. <strong>Please, upload your first theme now and start selling it.</strong>' ); ?>
 		</div>
 
-	<?php endif; ?>
+	<?php endif; wp_reset_postdata(); ?>
 
 <?php get_footer(); ?>

@@ -1,6 +1,287 @@
 <?php
 
 /**
+ * Register theme post type
+ *
+ * @since ThemeMY! 0.1
+ */
+function register_theme_post_type() {
+	$labels = array(
+		'name'               => _x( 'Themes', 'post type general name' ),
+		'singular_name'      => _x( 'Theme', 'post type singular name' ),
+		'add_new'            => _x( 'Add New', 'theme' ),
+		'add_new_item'       => __( 'Add New Theme' ),
+		'edit_item'          => __( 'Edit Theme' ),
+		'new_item'           => __( 'New Theme' ),
+		'all_items'          => __( 'All Themes' ),
+		'view_item'          => __( 'View Theme' ),
+		'search_items'       => __( 'Search Themes' ),
+		'not_found'          => __( 'No themes found' ),
+		'not_found_in_trash' => __( 'No themes found in Trash' ),
+		'parent_item_colon'  => '',
+		'menu_name'          => __( 'Themes' )
+	);
+	$args = array(
+		'description'  => __( 'Themes directory pages' ),
+		'labels'       => $labels,
+		'public'       => true,
+		'map_meta_cap' => true,
+		'rewrite'      => array( 'slug' => 'theme' ),
+		'supports'     => array(
+			'author', 'comments', 'custom-fields',
+			'editor', 'page-attributes', 'revisions'
+		)
+	);
+	register_post_type( 'theme', $args );
+}
+add_action( 'init', 'register_theme_post_type' );
+
+/**
+ * Handle file upload
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_theme_upload_handler() {
+	global $plugin_page, $wp_filesystem;
+
+	if ( ! is_page( 'themes' ) || empty( $_FILES['themezip'] ) )
+		return;
+
+	$referer = remove_query_arg( 'message', wp_get_referer() );
+
+	if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'thememy-theme-upload' ) ) {
+		wp_redirect( add_query_arg( 'message', '1', $referer ) );
+		exit;
+	}
+
+	include( ABSPATH . 'wp-admin/includes/file.php' );
+
+	// Only zip archives please
+	add_filter( 'wp_check_filetype_and_ext', 'thememy_restrict_filetype' );
+	$file = wp_handle_upload( $_FILES['themezip'], array( 'test_form' => false ) );
+	remove_filter( 'wp_check_filetype_and_ext', 'thememy_restrict_filetype', 10 );
+
+	if ( isset( $file['error'] ) ) {
+		wp_redirect( add_query_arg( 'message', '2', $referer ) );
+		exit;
+	}
+
+	// Extract archive in temporary directory to read style.css content
+	$temp_dir = get_temp_dir() . 'thememy-' . microtime() . '/';
+
+	WP_Filesystem();
+
+	$unzip_result = unzip_file( $file['file'], $temp_dir );
+
+	if ( is_wp_error( $unzip_result ) ) {
+		wp_redirect( add_query_arg( 'message', '3', $referer ) );
+		exit;
+	}
+
+	$dirs = array_keys( $wp_filesystem->dirlist( $temp_dir ) );
+
+	// Find style.css and read theme data
+	foreach ( $dirs as $dir ) {
+		$dir_path = $temp_dir . $dir . '/';
+
+		if ( ! $wp_filesystem->is_dir( $dir_path ) )
+			continue;
+
+		$style_path = "{$dir_path}style.css";
+
+		if ( ! $wp_filesystem->is_file( $style_path ) )
+			continue;
+
+		$theme_data = get_theme_data( $style_path );
+
+		$screenshot = false;
+		foreach ( array( 'png', 'gif', 'jpg', 'jpeg' ) as $ext ) {
+			$screenshot = "{$dir_path}screenshot.$ext";
+
+			if ( file_exists( $screenshot ) )
+				break;
+		}
+		break;
+	}
+
+	if ( empty( $theme_data ) ) {
+		$wp_filesystem->rmdir( $temp_dir, true );
+		wp_redirect( add_query_arg( 'message', '4', $referer ) );
+		exit;
+	}
+
+	// Save theme and attachment
+	if ( ! $theme_id = thememy_save_theme_data( $theme_data ) ) {
+		$wp_filesystem->rmdir( $temp_dir, true );
+		wp_redirect( add_query_arg( 'message', '5', $referer ) );
+		exit;
+	}
+
+	if ( ! thememy_save_file( $theme_id, $theme_data, $file ) ) {
+		$wp_filesystem->rmdir( $temp_dir, true );
+		wp_redirect( add_query_arg( 'message', '6', $referer ) );
+		exit;
+	}
+
+	thememy_save_screenshot( $theme_id, $screenshot );
+
+	$wp_filesystem->rmdir( $temp_dir, true );
+
+	wp_redirect( add_query_arg( 'success', 'true', thememy_get_edit_link( $theme_id ) ) );
+	exit;
+}
+add_action( 'template_redirect', 'thememy_theme_upload_handler' );
+
+/**
+ * Update or create a new theme page
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param array $theme_data Theme data from style.css
+ * @return int Theme page ID
+ */
+function thememy_save_theme_data( $theme_data, $author_id = null ) {
+	global $wpdb;
+
+	if ( ! $author_id )
+		$author_id = get_current_user_id();
+
+	$theme_id = $wpdb->get_var( $wpdb->prepare(
+		"SELECT ID FROM $wpdb->posts WHERE post_author = %d AND post_type= 'theme' AND post_title = %s",
+		$author_id,
+		$theme_data['Name']
+	) );
+
+	if ( $theme_id && $page = get_post( $theme_id ) ) {
+		$args = array(
+			'ID'           => $page->ID,
+			'post_excerpt' => $theme_data['Description']
+		);
+		$theme_id = wp_update_post( $args );
+	} else {
+		$args = array(
+			'post_excerpt' => $theme_data['Description'],
+			'post_status'  => 'publish',
+			'post_title'   => $theme_data['Name'],
+			'post_type'    => 'theme'
+		);
+		$theme_id = wp_insert_post( $args );
+	}
+
+	update_post_meta( $theme_id, '_theme_current_version', $theme_data['Version'] );
+	update_post_meta( $theme_id, '_theme_data', $theme_data );
+
+	return $theme_id;
+}
+
+/**
+ * Add file as attachment to a theme page or update existing attachment
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $theme_id Theme ID
+ * @param array $theme_data Theme data from style.css
+ * @param string $file Theme file path
+ * @return int Attachment ID
+ */
+function thememy_save_file( $theme_id, $theme_data, $file ) {
+	$attachment = get_posts( array(
+		'fields'      => 'ids',
+		'meta_key'    => '_theme_version',
+		'meta_value'  => $theme_data['Version'],
+		'nopaging'    => true,
+		'post_parent' => $theme_id,
+		'post_status' => 'inherit',
+		'post_type'   => 'attachment'
+	)	);
+
+	$attachment_id = $attachment ? $attachment[0] : 0;
+
+	$args = array(
+		'guid'           => $file['url'],
+		'ID'             => $attachment_id,
+		'post_mime_type' => $file['type'],
+		'post_parent'    => $theme_id,
+		'post_title'     => $theme_data['Version']
+	);
+	$attachment_id = wp_insert_attachment( $args, $file['file'], $theme_id );
+
+	if ( is_wp_error( $attachment_id ) )
+		return;
+
+	include( ABSPATH . 'wp-admin/includes/image.php' );
+
+	wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file ) );
+
+	update_post_meta( $attachment_id, '_theme_version', $theme_data['Version'] );
+	update_post_meta( $attachment_id, '_theme_data', $theme_data );
+
+	// Make file private on s3
+	if ( $amazon = get_post_meta( $attachment_id, 'amazonS3_info', true ) ) {
+		$s3_config = get_option( 'tantan_wordpress_s3' );
+		$s3 = new TanTanS3( $s3_config['key'], $s3_config['secret'] );
+		$s3->setObjectACL( $amazon['bucket'], $amazon['key'], 'authenticated-read' );
+
+		update_post_meta( $attachment_id, '_s3_acl', 'authenticated-read' );
+	}
+
+	return $attachment_id;
+}
+
+/**
+ * Add screenshot as featured image to a theme page and delete existing featured image
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $theme_id Theme ID
+ * @param string $path Path to the featured image
+ * @return int Image attachment ID
+ */
+function thememy_save_screenshot( $theme_id,  $path ) {
+	$args = array(
+		'name'     => wp_basename( $path ),
+		'tmp_name' => $path
+	);
+
+	include( ABSPATH . 'wp-admin/includes/media.php' );
+
+	$attachment_id = media_handle_sideload( $args, $theme_id, __( 'Theme Screenshot' ) );
+
+	if ( is_wp_error( $attachment_id ) )
+		return;
+
+	$old_thumbnail_id = get_post_thumbnail_id( $theme_id );
+
+	if ( ! set_post_thumbnail( $theme_id, $attachment_id ) )
+		return;
+
+	if ( $old_thumbnail_id )
+		wp_delete_attachment( $old_thumbnail_id, true );
+
+	return $attachment_id;
+}
+
+/**
+ * Restrict file type to zip only
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param array $filetype File type and extension
+ * @return array Original array for zip file ; array of empty values for the other types
+ */
+function thememy_restrict_filetype( $filetype ) {
+	if ( 'application/zip' != $filetype['type'] ) {
+		return array(
+			'ext'             => false,
+			'type'            => false,
+			'proper_filename' => false
+		);
+	}
+
+	return $filetype;
+}
+
+/**
  * Process theme deletion request
  *
  * @since ThemeMY! 0.1
@@ -90,6 +371,7 @@ add_filter( 'request', 'thememy_theme_query_vars' );
 function thememy_upload_error_message() {
 	if ( isset( $_GET['message'] ) ) {
 		switch ( $_GET['message'] ) {
+			case '1' :
 			case '2' :
 				_e( 'File upload error' );
 				break;

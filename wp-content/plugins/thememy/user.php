@@ -6,7 +6,9 @@
  * @since ThemeMY! 0.1
  */
 function thememy_getting_started() {
-	if ( ! is_user_logged_in() || ! empty( $_GET ) || get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no' )
+	if ( ! is_user_logged_in() || ! empty( $_GET )
+		|| get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
+ 		|| get_post_type() == 'theme'	)
 		return;
 
 	get_template_part( 'getting-started' );
@@ -33,10 +35,13 @@ add_action( 'wp_ajax_thememy-no-getting-started', 'thememy_no_getting_started' )
  * @since ThemeMY! 0.1
  */
 function thememy_admin_bar( $show ) {
+	if ( is_singular() && get_post_type() == 'theme' && ! get_query_var( 'edit' ) )
+		return false;
+
 	global $user_switching;
 
 	if ( ! current_user_can( 'edit_others_posts' ) && ! $user_switching->get_old_user() )
-		$show = false;
+		return false;
 
 	return $show;
 }
@@ -146,12 +151,7 @@ function thememy_restrict_admin() {
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX )
 		return;
 
-	if ( current_user_can( 'edit_others_posts' ) )
-		return;
-
-	global $plugin_page;
-
-	if ( 'td-admin' != $plugin_page || empty( $_FILES['themezip'] ) ) {
+	if ( ! current_user_can( 'edit_others_posts' ) ) {
 		wp_redirect( site_url( 'themes/' ) );
 		exit;
 	}

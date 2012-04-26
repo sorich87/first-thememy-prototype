@@ -40,7 +40,7 @@ function thememy_current_version() {
  */
 function thememy_get_current_version( $theme_id = null ) {
 	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
-	return get_post_meta( $theme_id, '_td_current_version', true );
+	return get_post_meta( $theme_id, '_theme_current_version', true );
 }
 
 /**
@@ -53,7 +53,7 @@ function thememy_get_current_version( $theme_id = null ) {
  */
 function thememy_get_theme_data( $theme_id = null ) {
 	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
-	return get_post_meta( $theme_id, '_td_theme_data', true );
+	return get_post_meta( $theme_id, '_theme_data', true );
 }
 
 /**
@@ -80,7 +80,7 @@ function thememy_get_download_link( $theme_id = null, $version = null ) {
 
 	$attachment = get_posts( array(
 		'fields'      => 'ids',
-		'meta_key'    => '_td_version',
+		'meta_key'    => '_theme_version',
 		'meta_value'  => $version,
 		'nopaging'    => true,
 		'post_parent' => $theme_id,
@@ -149,7 +149,7 @@ function thememy_get_all_versions( $theme_id = null ) {
 	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
 
 	$attachments = get_posts( array(
-		'meta_key'    => '_td_version',
+		'meta_key'    => '_theme_version',
 		'nopaging'    => true,
 		'post_parent' => $theme_id,
 		'post_status' => 'inherit',
@@ -158,9 +158,9 @@ function thememy_get_all_versions( $theme_id = null ) {
 
 	if ( $attachments ) {
 		foreach ( $attachments as $attachment ) {
-			$version = get_post_meta( $attachment->ID, '_td_version', true );
+			$version = get_post_meta( $attachment->ID, '_theme_version', true );
 
-			$versions[$version] = get_post_meta( $attachment->ID, '_td_data', true );
+			$versions[$version] = get_post_meta( $attachment->ID, '_theme_data', true );
 		}
 	}
 

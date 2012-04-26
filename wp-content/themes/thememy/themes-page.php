@@ -60,7 +60,7 @@ get_header(); ?>
 
 	<?php
 	$args = array(
-		'post_type' => 'td_theme',
+		'post_type' => 'theme',
 		'author'    => get_current_user_id(),
 		'nopaging'  => true
 	);

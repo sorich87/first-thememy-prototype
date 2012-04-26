@@ -50,7 +50,7 @@ function thememy_process_api_requests() {
 	if ( ! $themes )
 		exit;
 
-	$themes = get_posts( array( 'post__in' => $themes, 'post_type' => 'td_theme' ) );
+	$themes = get_posts( array( 'post__in' => $themes, 'post_type' => 'theme' ) );
 	if ( ! $themes )
 		exit;
 

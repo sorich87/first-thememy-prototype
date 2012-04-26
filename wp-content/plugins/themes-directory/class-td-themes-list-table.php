@@ -13,8 +13,8 @@ class TD_Themes_List_Table extends WP_List_Table {
 
 	function __construct() {
 		parent::__construct( array(
-			'singular' => 'td_theme',
-			'plural'   => 'td_themes'
+			'singular' => 'theme',
+			'plural'   => 'themes'
 		) );
 	}
 
@@ -32,7 +32,7 @@ class TD_Themes_List_Table extends WP_List_Table {
 
 		$args = array(
 			'paged'          => $current_page,
-			'post_type'      => 'td_theme',
+			'post_type'      => 'theme',
 			'posts_per_page' => $per_page,
 			'post_status'    => isset( $_REQUEST['post_status'] ) ? $_REQUEST['post_status'] : '',
 			'author'         => isset( $_REQUEST['author'] ) ? $_REQUEST['author'] : ''
@@ -69,7 +69,7 @@ class TD_Themes_List_Table extends WP_List_Table {
 	function display_rows() {
 		$themes = $this->items;
 
-		$post_type_object = get_post_type_object( 'td_theme' );
+		$post_type_object = get_post_type_object( 'theme' );
 ?>
 <?php foreach ( $themes as $theme ) : ?>
 	<?php $title = get_the_title( $theme->ID ); ?>
@@ -122,7 +122,7 @@ class TD_Themes_List_Table extends WP_List_Table {
 
 	function get_views() {
 		$status_links = array();
-		$num_posts = wp_count_posts( 'td_theme', 'readable' );
+		$num_posts = wp_count_posts( 'theme', 'readable' );
 
 		$total_posts = array_sum( (array) $num_posts );
 

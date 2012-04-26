@@ -6,7 +6,7 @@
  * @since ThemeMY! 0.1
  */
 function thememy_theme_delete() {
-	if ( ! is_singular() || get_post_type() != 'td_theme' || ! get_query_var( 'delete' ) )
+	if ( ! is_singular() || get_post_type() != 'theme' || ! get_query_var( 'delete' ) )
 		return;
 
 	$theme_id = get_the_ID();
@@ -44,7 +44,7 @@ add_action( 'template_redirect', 'thememy_theme_delete' );
  * @since ThemeMY! 0.1
  */
 function thememy_theme_edit_template( $template ) {
-	if ( get_post_type() != 'td_theme' || ! get_query_var( 'edit' ) || ! current_user_can( 'edit_post', get_the_ID() ) )
+	if ( get_post_type() != 'theme' || ! get_query_var( 'edit' ) || ! current_user_can( 'edit_post', get_the_ID() ) )
 		return $template;
 
 	return locate_template( 'theme-edit.php' );
@@ -214,7 +214,7 @@ function thememy_theme_slug_save() {
 	$theme_id = $data['theme_id'];
 	$theme_slug = $data['theme_slug'];
 
-	if ( $theme_slug != wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'td_theme', 0 ) )
+	if ( $theme_slug != wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) )
 		exit('exists');
 
 	$theme = get_post( $theme_id );
@@ -233,7 +233,7 @@ add_action( 'wp_ajax_thememy-save-theme-slug', 'thememy_theme_slug_save' );
  * @since ThemeMY! 0.1
  */
 function thememy_enqueue_plupload() {
-	if ( ! is_singular() || get_post_type() != 'td_theme' || ! get_query_var( 'edit' ) )
+	if ( ! is_singular() || get_post_type() != 'theme' || ! get_query_var( 'edit' ) )
 		return;
 
 	wp_enqueue_script( 'plupload-all' );

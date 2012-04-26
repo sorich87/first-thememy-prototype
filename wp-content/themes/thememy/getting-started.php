@@ -19,7 +19,7 @@
 
 		<h4>
 			<?php _e( 'Step 2' ); ?>
-			<?php if ( get_posts( array( 'post_type' => 'td_theme', 'author' => get_current_user_id(), 'fields' => 'ids' ) ) ) : ?>
+			<?php if ( get_posts( array( 'post_type' => 'theme', 'author' => get_current_user_id(), 'fields' => 'ids' ) ) ) : ?>
 				<span class="label label-success"><?php _e( 'done' ); ?></span>
 			<?php endif; ?>
 		</h4>

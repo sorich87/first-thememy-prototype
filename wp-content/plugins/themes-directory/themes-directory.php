@@ -123,7 +123,7 @@ class Themes_Directory {
 				'editor', 'page-attributes', 'revisions'
 			)
 		);
-		register_post_type( 'td_theme', $args );
+		register_post_type( 'theme', $args );
 	}
 
 	/**

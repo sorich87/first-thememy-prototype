@@ -158,7 +158,7 @@ class TD_Admin {
 			$author_id = get_current_user_id();
 
 		$theme_id = $wpdb->get_var( $wpdb->prepare(
-			"SELECT ID FROM $wpdb->posts WHERE post_author = %d AND post_type= 'td_theme' AND post_title = %s",
+			"SELECT ID FROM $wpdb->posts WHERE post_author = %d AND post_type= 'theme' AND post_title = %s",
 			$author_id,
 			$theme_data['Name']
 		) );
@@ -174,7 +174,7 @@ class TD_Admin {
 				'post_excerpt' => $theme_data['Description'],
 				'post_status'  => 'publish',
 				'post_title'   => $theme_data['Name'],
-				'post_type'    => 'td_theme'
+				'post_type'    => 'theme'
 			);
 			$theme_id = wp_insert_post( $args );
 		}

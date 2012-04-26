@@ -6,7 +6,7 @@
  * @since ThemeMY! 0.1
  */
 function thememy_redirect_to_paypal() {
-	if ( ! is_singular() || get_post_type() != 'td_theme' || ! get_query_var( 'buy' ) )
+	if ( ! is_singular() || get_post_type() != 'theme' || ! get_query_var( 'buy' ) )
 		return;
 
 	$theme = get_queried_object();

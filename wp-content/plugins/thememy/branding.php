@@ -7,10 +7,10 @@
  */
 function thememy_favicon() {
 ?>
-<link rel="shortcut icon" href="<?php echo THEMEMY_PLUGIN_URL; ?>/assets/ico/favicon.ico" />
-<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo THEMEMY_PLUGIN_URL; ?>assets/ico/apple-touch-icon-114-precomposed.png" />
-<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo THEMEMY_PLUGIN_URL; ?>assets/ico/apple-touch-icon-72-precomposed.png" />
-<link rel="apple-touch-icon-precomposed" href="<?php echo THEMEMY_PLUGIN_URL; ?>assets/ico/apple-touch-icon-57-precomposed.png" />
+<link rel="shortcut icon" href="<?php echo THEMEMY_PLUGIN_URL; ?>bootstrap/ico/favicon.ico" />
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo THEMEMY_PLUGIN_URL; ?>bootstrap/ico/apple-touch-icon-114-precomposed.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo THEMEMY_PLUGIN_URL; ?>bootstrap/ico/apple-touch-icon-72-precomposed.png" />
+<link rel="apple-touch-icon-precomposed" href="<?php echo THEMEMY_PLUGIN_URL; ?>bootstrap/ico/apple-touch-icon-57-precomposed.png" />
 <?php
 }
 add_action( 'wp_head', 'thememy_favicon' );
@@ -125,4 +125,42 @@ function thememy_phpmailer_init( $phpmailer ) {
 		$phpmailer->SMTPDebug = true;
 }
 add_action( 'phpmailer_init', 'thememy_phpmailer_init' );
+
+/**
+ * Enqueue bootstrap scripts and styles
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_enqueue_bootstrap() {
+	if ( is_admin() )
+		return;
+
+	$debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+	$bootstrap_dir = THEMEMY_PLUGIN_URL . 'bootstrap/';
+
+	wp_enqueue_script( 'jquery' );
+
+	if ( $debug ) {
+		wp_enqueue_style( 'bootstrap', $bootstrap_dir . 'less/bootstrap.less' );
+		wp_enqueue_style( 'bootstrap-reponsive', $bootstrap_dir . 'less/responsive.less' );
+		wp_enqueue_script( 'less', $bootstrap_dir . 'less/less-1.3.0.min.js' );
+	} else {
+		wp_enqueue_style( 'bootstrap', $bootstrap_dir . 'css/bootstrap.min.css', false, 201204241 );
+		wp_enqueue_style( 'bootstrap-reponsive', $bootstrap_dir . 'css/bootstrap-responsive.min.css', false, 201204241 );
+	}
+
+	wp_register_script( 'bootstrap-alert', $bootstrap_dir . 'js/bootstrap-alert.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-button', $bootstrap_dir . 'js/bootstrap-button.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-carousel', $bootstrap_dir . 'js/bootstrap-carousel.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-collapse', $bootstrap_dir . 'js/bootstrap-collapse.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-dropdown', $bootstrap_dir . 'js/bootstrap-dropdown.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-modal', $bootstrap_dir . 'js/bootstrap-modal.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-popover', $bootstrap_dir . 'js/bootstrap-popover.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-scrollspy', $bootstrap_dir . 'js/bootstrap-scrollspy.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-tab', $bootstrap_dir . 'js/bootstrap-tab.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-tooltip', $bootstrap_dir . 'js/bootstrap-tooltip.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-transition', $bootstrap_dir . 'js/bootstrap-transition.js', 'jquery', 201204261, true );
+	wp_register_script( 'bootstrap-typeahead', $bootstrap_dir . 'js/bootstrap-typeahead.js', 'jquery', 201204261, true );
+}
+add_action( 'wp_enqueue_scripts', 'thememy_enqueue_bootstrap' );
 

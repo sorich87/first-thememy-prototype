@@ -36,6 +36,7 @@
 		<a href="#" class="btn btn-warning" id="no-getting-started"><?php _e( "Don't show this again" ); ?></a>
   </div>
 </div>
+<?php wp_print_scripts( 'bootstrap-modal' ); ?>
 <script type="text/javascript">
 jQuery(function ($) {
 	$("#getting-started").modal();

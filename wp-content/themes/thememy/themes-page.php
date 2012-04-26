@@ -83,19 +83,9 @@ get_header(); ?>
 						<?php thememy_current_version(); ?>
 					</h4>
 					<hr />
-					<button class="btn btn-mini" data-toggle="collapse" data-target="#theme-details-<?php the_ID(); ?>">
-						<?php _e( 'theme details' ); ?>
-					</button>
+					<a class="btn btn-mini" href="<?php the_permalink(); ?>"><?php _e( 'view page' ); ?></a>
+					<a class="btn btn-mini btn-success" href="<?php thememy_edit_link(); ?>"><?php _e( 'edit page' ); ?></a>
 					<a class="btn btn-mini btn-danger delete-theme" href="<?php thememy_delete_link(); ?>"><?php _e( 'delete theme' ); ?></a>
-					<div class="collapse" id="theme-details-<?php the_ID(); ?>">
-						<hr />
-						<a class="close pull-right" data-toggle="collapse" data-target="#theme-details-<?php the_ID(); ?>">&times;</a>
-						<p>
-							<b><?php _e( 'Landing Page' ); ?></b>
-							<a href="<?php thememy_edit_link(); ?>">(<?php _e( 'edit' ); ?>)</a>
-						</p>
-						<pre><a href="<?php the_permalink(); ?>"><?php the_permalink(); ?></a></pre>
-					</div>
 				</div>
 			</div>
 		</li>

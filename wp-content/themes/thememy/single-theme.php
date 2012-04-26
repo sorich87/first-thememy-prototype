@@ -19,10 +19,6 @@
 			.page-header h1 {
 				font-size: 40px;
 			}
-			.page-header p {
-				line-height: 40px;
-				font-size: 13px;
-			}
 			.entry-excerpt p {
 				font-size: 20px;
 				line-height: 26px;
@@ -82,8 +78,10 @@
 					<div class="row">
 						<div class="span6">
 							<header class="page-header">
-								<h1 class="entry-title"><?php the_title(); ?></h1>
-								<p><?php printf( __( 'by %s' ), "<a href='{$settings['home-page']}'>{$settings['business-name']}</a>" ); ?></p>
+								<h1 class="entry-title">
+									<?php the_title(); ?>
+									<small><?php printf( __( 'by %s' ), "<a href='{$settings['home-page']}'>{$settings['business-name']}</a>" ); ?></small>
+								</h1>
 							</header>
 
 							<div class="entry-excerpt">

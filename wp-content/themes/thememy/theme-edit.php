@@ -22,7 +22,7 @@ get_header(); ?>
 
 		<?php if ( ! empty( $_GET['success'] ) ) : ?>
 			<div class="alert alert-success">
-				<?php _e( 'Landing page details saved' ); ?>
+				<?php printf( __( 'Landing page details saved. <a href="%s">View changes</a>' ), get_permalink() ); ?>
 			</div>
 		<?php endif; ?>
 

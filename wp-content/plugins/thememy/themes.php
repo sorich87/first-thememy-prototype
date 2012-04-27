@@ -609,10 +609,8 @@ function thememy_theme_edit() {
 		exit;
 	}
 
-	$referer = remove_query_arg( array( 'message', 'success' ), wp_get_referer() );
-
 	if ( ! wp_verify_nonce( $_REQUEST['thememy_nonce'], 'edit-theme' ) ) {
-		wp_redirect( add_query_arg( 'message', '1', $referer ) );
+		wp_redirect( add_query_arg( 'message', '1', thememy_get_edit_link( $theme_id ) ) );
 		exit;
 	}
 
@@ -635,11 +633,11 @@ function thememy_theme_edit() {
 		wp_redirect( add_query_arg( array(
 			'message'    => '2',
 			'theme_slug' => $theme_slug
-		) , $referer ) );
+		) , thememy_get_edit_link( $theme_id ) ) );
 		exit;
 	}
 
-	wp_redirect( add_query_arg( 'success', 'true', $referer ) );
+	wp_redirect( add_query_arg( 'success', 'true', thememy_get_edit_link( $theme_id ) ) );
 	exit;
 }
 add_action( 'template_redirect', 'thememy_theme_edit');

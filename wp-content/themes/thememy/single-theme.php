@@ -46,8 +46,10 @@
 				opacity:1;
 				z-index:1;
 			}
-			.btn-xxlarge {
-				margin: 60px 0 30px 30px;
+			.row-action {
+				margin: 30px 0 30px 30px;
+			}
+			.row-action .btn {
 				padding: 9px 14px;
 				font-size: 30px;
 				line-height: normal;
@@ -135,12 +137,16 @@
 								</div>
 							</div>
 
-							<a class="btn btn-success btn-xxlarge span2" href="<?php thememy_purchase_link(); ?>">
-								<?php _e( 'Buy Now' ); ?>
-							</a>
-							<a class="btn btn-primary btn-xxlarge span2" href="<?php thememy_demo_link(); ?>">
-								<?php _e( 'Demo' ); ?>
-							</a>
+							<div class="row-action">
+								<a class="btn btn-success span2" href="<?php thememy_purchase_link(); ?>">
+									<?php _e( 'Buy Now' ); ?>
+								</a>
+								<?php if ( thememy_get_demo_link() ) : ?>
+									<a class="btn btn-primary span2" href="<?php thememy_demo_link(); ?>">
+										<?php _e( 'Demo' ); ?>
+									</a>
+								<?php endif; ?>
+							</div>
 						</div>
 
 						<div class="span6">
@@ -175,9 +181,7 @@
 								<?php endif; ?>
 
 							<?php else : ?>
-								<span class="thumbnail">
-									<?php echo wp_get_attachment_image( get_post_thumbnail_id(), 'full' ); ?>
-								</span>
+								<?php echo wp_get_attachment_image( get_post_thumbnail_id(), 'full' ); ?>
 							<?php endif; ?>
 						</div>
 					</div><!-- .row -->

@@ -20,7 +20,7 @@ jQuery(function ($) {
 
 	uploader.bind("FileUploaded", function (up, files, r) {
 		$("#slideshow-images").show().append("<li class='span3'><span class='thumbnail'>" +
-		 r.response + "</span></li>");
+																				 r.response + "</span></li>");
 		$("#no-image").hide();
 	});
 
@@ -29,18 +29,18 @@ jQuery(function ($) {
 			$(browseButton).button("error").addClass("btn-danger");
 			$("#errorlist").show();
 			$.each(errors, function (i, error) {
-				$("<li>Error: " + error.code +
-					", Message: " + error.message +
-					(error.file ? ", File: " + error.file.name : "") +
+				$("<li>" + error.message +
+					" (" + error.message + ")"
+					(error.file ? " on " + error.file.name : "") +
 					"</li>").appendTo("#errorlist ul");
 			});
 		} else {
 			$(browseButton).button("complete").addClass("btn-success");
-
-			setTimeout(function () {
-				$(browseButton).removeClass("btn-success btn-danger").button('reset');
-			}, 2000);
 		}
+
+		setTimeout(function () {
+			$(browseButton).removeClass("btn-success btn-danger").button('reset');
+		}, 2000);
 	});
 });
 

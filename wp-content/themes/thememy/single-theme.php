@@ -157,8 +157,8 @@
 									<div id="carousel" class="carousel">
 										<div class="carousel-inner">
 											<?php foreach ( $attachments as $key => $attachment ) : ?>
-												<div class="item<?php echo 0 == $key ? 'active' : ''; ?>">
-													<?php echo wp_get_attachment_image( $attachment->ID, 'full' ); ?>
+												<div class="item<?php echo 0 == $key ? ' active' : ''; ?>">
+													<?php echo wp_get_attachment_image( $attachment->ID, 'span6-span6' ); ?>
 												</div>
 											<?php endforeach; ?>
 										</div>
@@ -166,12 +166,14 @@
 
 								<?php else : ?>
 									<span class="thumbnail">
-										<?php echo wp_get_attachment_image( $attachments[0]->ID, 'full' ); ?>
+										<?php echo wp_get_attachment_image( $attachments[0]->ID, 'span6-span6' ); ?>
 									</span>
 								<?php endif; ?>
 
 							<?php else : ?>
-								<?php echo wp_get_attachment_image( get_post_thumbnail_id(), 'full' ); ?>
+								<span class="thumbnail">
+									<?php echo wp_get_attachment_image( get_post_thumbnail_id(), 'full' ); ?>
+								</span>
 							<?php endif; ?>
 						</div>
 					</div><!-- .row -->

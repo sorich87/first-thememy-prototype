@@ -485,29 +485,53 @@ function thememy_mod_rewrite_rules( $rules ) {
 add_action( 'mod_rewrite_rules', 'thememy_mod_rewrite_rules' );
 
 /**
- * Save theme slug
+ * Verify theme slug availability
  *
  * @since ThemeMY! 0.1
  */
-function thememy_theme_slug_save() {
-	check_ajax_referer( 'thememy-save-theme-slug' );
+function thememy_theme_slug_verify() {
+	check_ajax_referer( 'thememy-edit-theme' );
 
 	$data = stripslashes_deep( $_POST );
 	$theme_id = $data['theme_id'];
 	$theme_slug = $data['theme_slug'];
 
-	if ( $theme_slug != wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) )
-		exit('exists');
+	if ( ! current_user_can( 'edit_post', $theme_id ) )
+		exit( 'error' );
 
-	$theme = get_post( $theme_id );
-	$theme->post_name = $theme_slug;
+	if ( $theme_slug == wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) )
+		exit( 'available' );
 
-	if ( ! wp_update_post( $theme ) )
-		exit('error');
-
-	exit('complete');
+	exit( 'unavailable' );
 }
-add_action( 'wp_ajax_thememy-save-theme-slug', 'thememy_theme_slug_save' );
+add_action( 'wp_ajax_thememy-verify-theme-slug', 'thememy_theme_slug_verify' );
+
+/**
+ * Delete a theme image
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_image_delete() {
+	check_ajax_referer( 'thememy-edit-theme' );
+
+	$data = stripslashes_deep( $_POST );
+	$theme_id = $data['theme_id'];
+	$image_id = $data['image_id'];
+
+	if ( ! current_user_can( 'edit_post', $theme_id ) )
+		exit( 'error' );
+
+	$image = get_post( $image_id );
+
+	if ( $image->post_parent != $theme_id )
+		exit( 'error' );
+
+	if ( ! wp_delete_attachment( $image_id, true ) )
+		exit( 'error' );
+
+	exit( 'success' );
+}
+add_action( 'wp_ajax_thememy-delete-image', 'thememy_image_delete' );
 
 /**
  * Enqueue theme upload script
@@ -527,7 +551,7 @@ function thememy_enqueue_plupload() {
 		'browse_button' => 'plupload-browse-button',
 		'file_data_name' => 'async-upload',
 		'multiple_queues' => true,
-		'max_file_size' => '1mb',
+		'max_file_size' => '2mb',
 		'url' => admin_url( 'admin-ajax.php' ),
 		'flash_swf_url' => includes_url( 'js/plupload/plupload.flash.swf' ),
 		'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),

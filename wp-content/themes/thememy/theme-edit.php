@@ -30,10 +30,10 @@ get_header(); ?>
 						<div class="input-prepend input-append">
 							<?php
 							$button_states = array(
-								'loading'  => __( 'Saving...' ),
-								'exits'    => __( 'Slug already used. Try another.' ),
-								'error'    => __( 'An error occured. Try again.' ),
-								'complete' => __( 'Saved!' )
+								'loading'     => __( 'Verifying...' ),
+								'error'       => __( 'Access denied.' ),
+								'unavailable' => __( 'Already used. Try another.' ),
+								'available'   => __( 'Available!' )
 							);
 							$button_states_attrs = '';
 							foreach ( $button_states as $key => $value ) {
@@ -44,41 +44,39 @@ get_header(); ?>
 							// and doing that with HTML only would give a very lengthy line
 							echo '<span class="add-on">' . site_url( 'theme/' ) . '</span>';
 							echo "<input type='text' class='input-medium' id='theme-slug' name='theme-slug' value='$post->post_name' />";
-							echo "<button class='btn btn-primary'$button_states_attrs autocomplete='off' id='save-theme-slug'>";
-							echo __( 'Save' );
+							echo "<button class='btn btn-info'$button_states_attrs autocomplete='off' id='verify-theme-slug'>";
+							echo __( 'Verify Availability' );
 							echo '</button>';
 							?>
 						</div>
 						<p class="help-block"><?php _e( 'Choose the URL for the theme landing page' ); ?></p>
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="theme-image"><?php _e( 'Add slideshow images' ); ?></label>
-					<div class="controls">
-						<?php
-						$button_states = array(
-							'loading'  => __( 'Uploading...' ),
-							'error'    => __( 'Errors occured.' ),
-							'complete' => __( 'Success!' )
-						);
-						$button_states_attrs = '';
-						foreach ( $button_states as $key => $value ) {
-							$button_states_attrs .= " data-{$key}-text='" . esc_attr( $value ) . "'";
-						}
-						?>
-						<input type="button" id="plupload-browse-button" class="btn btn-primary"<?php echo $button_states_attrs; ?> value="<?php _e( 'Select Images' ); ?>" />
-
-						<p class="help-block"><?php _e( 'Choose images to add to the slideshow on the theme landing page' ); ?></p>
-						<div id="errorlist" class="hide alert alert-block alert-error">
-							<h4 class="alert-heading"><?php _e( 'Errors occured' ); ?></h4>
-							<ul class="unstyled"></ul>
-						</div>
-					</div>
-				</div>
 			</fieldset>
 		</form>
 
 		<h3><?php _e( 'Slideshow Images' ); ?></h3>
+
+		<?php
+		$button_states = array(
+			'loading'  => __( 'Uploading...' ),
+			'error'    => __( 'Access denied.' ),
+			'complete' => __( 'Success!' )
+		);
+		$button_states_attrs = '';
+		foreach ( $button_states as $key => $value ) {
+			$button_states_attrs .= " data-{$key}-text='" . esc_attr( $value ) . "'";
+		}
+		?>
+		<p>
+			<button id="plupload-browse-button" class="btn"<?php echo $button_states_attrs; ?>><?php _e( 'Add Images' ); ?></button>
+
+			<div id="errorlist" class="hide alert alert-block alert-error">
+				<h4 class="alert-heading"><?php _e( 'Errors occured' ); ?></h4>
+				<ul class="unstyled"></ul>
+			</div>
+		</p>
+
 		<?php
 		$args = array(
 			'post_type'      => 'attachment',
@@ -95,6 +93,7 @@ get_header(); ?>
 			<?php foreach ( $attachments as $attachment ) : ?>
 				<li class="span3">
 					<span class="thumbnail">
+						<a class="close delete-image" href="<?php echo $attachment->ID; ?>">&times;</a>
 						<?php echo wp_get_attachment_image( $attachment->ID, 'post-thumbnail' ); ?>
 					</span>
 				</li>

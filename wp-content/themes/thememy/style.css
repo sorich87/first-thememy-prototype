@@ -68,3 +68,7 @@ body.home {
 .page-template-themes-page-php .thumbnail {
 	min-height: 290px;
 }
+
+.thumbnail .close {
+	position: absolute;
+}

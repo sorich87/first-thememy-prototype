@@ -602,7 +602,7 @@ function thememy_theme_edit() {
 	$theme_id   = $data['theme-id'];
 	$theme_slug = $data['theme-slug'];
 	$theme_demo = $data['theme-demo'];
-	$theme_description = $data['description'];
+	$theme_description = $data['theme-description'];
 
 	if ( ! current_user_can( 'edit_post', $theme_id ) ) {
 		wp_redirect( get_permalink( $theme_id ) );

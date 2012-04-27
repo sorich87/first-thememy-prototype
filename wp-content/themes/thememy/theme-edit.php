@@ -70,7 +70,7 @@ get_header(); ?>
 							// and doing that with HTML only would give a very lengthy line
 							echo '<span class="add-on">' . site_url( 'theme/' ) . '</span>';
 							echo "<input type='text' class='input-slug' id='theme-slug' name='theme-slug' value='$chosen_slug' />";
-							echo "<button class='btn btn-info' data-toggle='button'$button_states_attrs autocomplete='off' id='verify-theme-slug'>";
+							echo "<button class='btn btn-info'$button_states_attrs autocomplete='off' id='verify-theme-slug'>";
 							echo __( 'Verify availability' );
 							echo '</button>';
 							?>
@@ -90,14 +90,9 @@ get_header(); ?>
 				<div class="control-group">
 					<label class="control-label" for="theme-description"><?php _e( 'Theme Description' ); ?></label>
 					<div class="controls">
-						<div class="description-editor">
-							<?php $content = $post->post_content ? $post->post_content : $post->post_excerpt; ?>
-							<?php wp_editor( $content, 'description', array(
-								'media_buttons' => false,
-								'textarea_rows' => 8
-							)	); ?>
-						</div>
-						<p class="help-block"><?php _e( 'If left empty, the description will be extracted from the theme style.css file' ); ?></p>
+						<?php $content = $post->post_content ? $post->post_content : $post->post_excerpt; ?>
+						<textarea class="span6" rows="6" id="theme-description" name="theme-description"><?php echo $content; ?></textarea>
+						<p class="help-block"><?php _e( 'HTML allowed. If left empty, the description will be extracted from the theme style.css file' ); ?></p>
 					</div>
 				</div>
 

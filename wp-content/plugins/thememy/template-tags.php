@@ -207,11 +207,34 @@ function thememy_edit_link() {
  * @since ThemeMY! 0.1
  *
  * @param int $theme_id Theme ID
- * @return string Theme delete link
+ * @return string Theme edit link
  */
 function thememy_get_edit_link( $theme_id = null ) {
 	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
 
 	return trailingslashit( get_permalink( $theme_id ) ) . 'edit/';
+}
+
+/**
+ * Display theme demo link
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_demo_link() {
+	echo thememy_get_demo_link();
+}
+
+/**
+ * Return demo link for one theme
+ *
+ * @since ThemeMY! 0.1
+ *
+ * @param int $theme_id Theme ID
+ * @return string Theme demo link
+ */
+function thememy_get_demo_link( $theme_id = null ) {
+	$theme_id = ( null === $theme_id ) ? get_the_ID() : $theme_id;
+
+	return get_post_meta( $theme_id, '_theme_demo', true );
 }
 

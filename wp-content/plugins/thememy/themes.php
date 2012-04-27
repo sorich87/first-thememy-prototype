@@ -496,7 +496,7 @@ function thememy_theme_slug_verify() {
 	$theme_id = $data['theme_id'];
 	$theme_slug = $data['theme_slug'];
 
-	if ( ! current_user_can( 'edit_post', $theme_id ) )
+	if ( ! current_user_can( 'edit_post', $theme_id ) || empty( $theme_slug ) )
 		exit( 'error' );
 
 	if ( $theme_slug == wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) )
@@ -588,4 +588,56 @@ function thememy_image_upload() {
 	exit;
 }
 add_action('wp_ajax_theme_image_upload', "thememy_image_upload");
+
+/**
+ * Save theme edit form
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_theme_edit() {
+	if ( ! is_singular() || get_post_type() != 'theme' || ! get_query_var( 'edit' ) || empty( $_POST ) )
+		return;
+
+	$data = stripslashes_deep( $_POST );
+	$theme_id   = $data['theme-id'];
+	$theme_slug = $data['theme-slug'];
+	$theme_demo = $data['theme-demo'];
+
+	if ( ! current_user_can( 'edit_post', $theme_id ) ) {
+		wp_redirect( get_permalink( $theme_id ) );
+		exit;
+	}
+
+	$referer = remove_query_arg( array( 'message', 'success' ), wp_get_referer() );
+
+	if ( ! wp_verify_nonce( $_REQUEST['thememy_nonce'], 'edit-theme' ) ) {
+		wp_redirect( add_query_arg( 'message', '1', $referer ) );
+		exit;
+	}
+
+	$theme = get_post( $theme_id );
+
+	update_post_meta( $theme->ID, '_theme_demo', $theme_demo );
+
+	if ( $theme_slug ) {
+		if ( $theme_slug != wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) ) {
+			wp_redirect( add_query_arg( array(
+				'message'    => '2',
+				'theme_slug' => $theme_slug
+			) , $referer ) );
+			exit;
+		}
+
+		$theme->post_name = $theme_slug;
+
+		if ( ! wp_update_post( $theme ) ) {
+			wp_redirect( add_query_arg( 'message', '1', $referer ) );
+			exit;
+		}
+	}
+
+	wp_redirect( add_query_arg( 'success', 'true', $referer ) );
+	exit;
+}
+add_action( 'template_redirect', 'thememy_theme_edit');
 

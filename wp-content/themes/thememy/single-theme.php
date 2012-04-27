@@ -134,7 +134,7 @@
 							<a class="btn btn-success btn-xxlarge span2" href="<?php thememy_purchase_link(); ?>">
 								<?php _e( 'Buy Now' ); ?>
 							</a>
-							<a class="btn btn-primary btn-xxlarge span2" href="<?php // thememy_demo_link(); ?>">
+							<a class="btn btn-primary btn-xxlarge span2" href="<?php thememy_demo_link(); ?>">
 								<?php _e( 'Demo' ); ?>
 							</a>
 						</div>

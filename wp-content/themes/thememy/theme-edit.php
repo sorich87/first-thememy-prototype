@@ -47,7 +47,7 @@ get_header(); ?>
 			<input type="hidden" id="theme-id" name="theme-id" value="<?php the_ID(); ?>" />
 
 			<fieldset>
-				<legend><?php _e( 'Edit landing page details' ); ?></legend>
+				<legend><?php _e( 'Edit theme landing page details' ); ?></legend>
 				<div class="control-group<?php if ( isset( $_GET['message'] ) && '2' == $_GET['message'] ) echo ' error'; ?>">
 					<label class="control-label" for="theme-slug"><?php _e( 'Landing page URL' ); ?></label>
 					<div class="controls">
@@ -69,9 +69,9 @@ get_header(); ?>
 							// Using PHP here because there should be no space between the HTML elements
 							// and doing that with HTML only would give a very lengthy line
 							echo '<span class="add-on">' . site_url( 'theme/' ) . '</span>';
-							echo "<input type='text' class='input-medium' id='theme-slug' name='theme-slug' value='$chosen_slug' />";
-							echo "<button class='btn btn-info'$button_states_attrs autocomplete='off' id='verify-theme-slug'>";
-							echo __( 'Verify Availability' );
+							echo "<input type='text' class='input-slug' id='theme-slug' name='theme-slug' value='$chosen_slug' />";
+							echo "<button class='btn btn-info' data-toggle='button'$button_states_attrs autocomplete='off' id='verify-theme-slug'>";
+							echo __( 'Verify availability' );
 							echo '</button>';
 							?>
 						</div>
@@ -80,20 +80,32 @@ get_header(); ?>
 				</div>
 
 				<div class="control-group">
-					<label class="control-label" for="theme-demo"><?php _e( 'Demo URL' ); ?></label>
+					<label class="control-label" for="theme-demo"><?php _e( 'Theme Demo URL' ); ?></label>
 					<div class="controls">
-						<input value="<?php echo esc_attr( get_post_meta( get_the_ID(), '_theme_demo', true ) ); ?>" type="text" class="input-xlarge" id="theme-demo" name="theme-demo" />
+						<input value="<?php echo esc_attr( get_post_meta( get_the_ID(), '_theme_demo', true ) ); ?>" type="text" class="span6" id="theme-demo" name="theme-demo" />
 						<p class="help-block"><?php _e( 'If not set, the demo button will not be shown' ); ?></p>
 					</div>
 				</div>
 
 				<div class="control-group">
+					<label class="control-label" for="theme-description"><?php _e( 'Theme Description' ); ?></label>
 					<div class="controls">
-						<button type="submit" class="btn btn-primary">
-							<i class="icon-white icon-ok"></i>
-							<?php _e( 'Save changes' ); ?>
-						</button>
+						<div class="description-editor">
+							<?php $content = $post->post_content ? $post->post_content : $post->post_excerpt; ?>
+							<?php wp_editor( $content, 'description', array(
+								'media_buttons' => false,
+								'textarea_rows' => 8
+							)	); ?>
+						</div>
+						<p class="help-block"><?php _e( 'If left empty, the description will be extracted from the theme style.css file' ); ?></p>
 					</div>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">
+						<i class="icon-white icon-ok"></i>
+						<?php _e( 'Save changes' ); ?>
+					</button>
 				</div>
 			</fieldset>
 		</form>

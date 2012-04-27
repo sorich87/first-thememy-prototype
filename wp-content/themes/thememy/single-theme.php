@@ -19,9 +19,8 @@
 			.page-header h1 {
 				font-size: 40px;
 			}
-			.entry-excerpt p {
-				font-size: 20px;
-				line-height: 26px;
+			.page-header a {
+				color: inherit;
 			}
 			.row-social {
 				margin: 20px 0 0;
@@ -71,7 +70,7 @@
 
     <div class="container">
 
-      <?php while ( have_posts() ) : the_post(); ?>
+      <?php while ( have_posts() ) : the_post(); global $post; ?>
 				<?php $settings = thememy_get_settings( get_the_author_meta( 'ID' ) ); ?>
 
 				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
@@ -83,9 +82,14 @@
 									<small><?php printf( __( 'by %s' ), "<a href='{$settings['home-page']}'>{$settings['business-name']}</a>" ); ?></small>
 								</h1>
 							</header>
+							<hr />
 
 							<div class="entry-excerpt">
-								<?php the_excerpt(); ?>
+								<?php if ( $post->post_content ) : ?>
+									<?php the_content(); ?>
+								<?php else : ?>
+									<?php the_excerpt(); ?>
+								<?php endif; ?>
 							</div>
 
 							<div class="row row-social">

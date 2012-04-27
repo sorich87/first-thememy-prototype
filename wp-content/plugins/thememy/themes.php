@@ -602,6 +602,7 @@ function thememy_theme_edit() {
 	$theme_id   = $data['theme-id'];
 	$theme_slug = $data['theme-slug'];
 	$theme_demo = $data['theme-demo'];
+	$theme_description = $data['description'];
 
 	if ( ! current_user_can( 'edit_post', $theme_id ) ) {
 		wp_redirect( get_permalink( $theme_id ) );
@@ -619,21 +620,23 @@ function thememy_theme_edit() {
 
 	update_post_meta( $theme->ID, '_theme_demo', $theme_demo );
 
+	$theme->post_content = $theme_description;
+
 	if ( $theme_slug ) {
-		if ( $theme_slug != wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) ) {
-			wp_redirect( add_query_arg( array(
-				'message'    => '2',
-				'theme_slug' => $theme_slug
-			) , $referer ) );
-			exit;
-		}
+		if ( $theme_slug == wp_unique_post_slug( $theme_slug, $theme_id, 'publish', 'theme', 0 ) )
+			$theme->post_name = $theme_slug;
+		else
+			$slug_exists = true;
+	}
 
-		$theme->post_name = $theme_slug;
+	wp_update_post( $theme );
 
-		if ( ! wp_update_post( $theme ) ) {
-			wp_redirect( add_query_arg( 'message', '1', $referer ) );
-			exit;
-		}
+	if ( ! empty( $slug_exits ) ) {
+		wp_redirect( add_query_arg( array(
+			'message'    => '2',
+			'theme_slug' => $theme_slug
+		) , $referer ) );
+		exit;
 	}
 
 	wp_redirect( add_query_arg( 'success', 'true', $referer ) );

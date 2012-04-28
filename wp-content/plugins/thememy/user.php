@@ -131,7 +131,7 @@ function thememy_restrict_pages() {
 			exit;
 		}
 
-	} else {
+	} elseif ( ! is_404() ) {
 		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'survey-page.php' )
 			&& ! is_page_template( 'download-page.php' ) && ! is_page_template( 'signup-page.php' )
 			&& ! is_page( 'api' ) && ! is_page( 'ipn' ) ) {

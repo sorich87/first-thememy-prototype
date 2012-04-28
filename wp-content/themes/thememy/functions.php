@@ -67,7 +67,7 @@ function thememy_setup() {
 	add_theme_support( 'post-thumbnails' );
 	set_post_thumbnail_size( 300, 225 );
 
-	add_image_size( 'span6-span6', 570, 570, true );
+	add_image_size( 'span6', 570 );
 
 	/**
 	 * This theme uses wp_nav_menu() in one location.

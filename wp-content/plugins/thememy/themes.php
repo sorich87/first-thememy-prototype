@@ -333,23 +333,25 @@ function thememy_theme_edit_template( $template ) {
 add_filter( 'single_template', 'thememy_theme_edit_template' );
 
 /**
- * Add delete and edit endpoints
+ * Add 'buy', 'delete' and 'edit' endpoints and 'api' query vars
  *
  * @since ThemeMY! 0.1
  */
-function thememy_add_rewrite_endpoints() {
+function thememy_add_rewrites() {
 	add_rewrite_endpoint( 'buy', EP_PERMALINK );
 	add_rewrite_endpoint( 'delete', EP_PERMALINK );
 	add_rewrite_endpoint( 'edit', EP_PERMALINK );
+
+	add_rewrite_rule( 'api/?$', 'index.php?api=true', 'top' );
 }
-add_action( 'init', 'thememy_add_rewrite_endpoints' );
+add_action( 'init', 'thememy_add_rewrites' );
 
 /**
- * Set delete and edit query vars
+ * Set 'buy', 'delete' and 'edit' request vars
  *
  * @since ThemeMY! 0.1
  */
-function thememy_theme_query_vars( $vars ) {
+function thememy_request( $vars ) {
 	if ( isset( $vars['buy'] ) )
 		$vars['buy'] = true;
 
@@ -361,7 +363,19 @@ function thememy_theme_query_vars( $vars ) {
 
 	return $vars;
 }
-add_filter( 'request', 'thememy_theme_query_vars' );
+add_filter( 'request', 'thememy_request' );
+
+/**
+ * Add 'api' query var
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_query_vars( $query_vars ) {
+	$query_vars[] = 'api';
+
+	return $query_vars;
+}
+add_filter( 'query_vars', 'thememy_query_vars' );
 
 /**
  * Display theme upload error message

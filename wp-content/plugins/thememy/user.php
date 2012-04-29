@@ -7,9 +7,9 @@
  */
 function thememy_get_public_pages() {
 	return array(
-		'api', 'download', 'features',
-		'ipn', 'order-cancelled', 'order-confirmation',
-		'signup', 'survey'
+		'download', 'features', 'ipn',
+		'order-cancelled', 'order-confirmation', 'signup',
+		'survey'
 	);
 }
 

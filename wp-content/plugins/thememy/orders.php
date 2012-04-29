@@ -416,26 +416,14 @@ function thememy_display_meta_dump() {
 add_action( 'dbx_post_sidebar', 'thememy_display_meta_dump' );
 
 /**
- * Display reports
- *
- * @since ThemeMY! 0.1
- */
-function thememy_reports() {
-	ob_start();
-	get_template_part( 'content/reports' );
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
-}
-add_shortcode( 'reports', 'thememy_reports' );
-
-/**
  * Restrict access to download page
  *
  * @since ThemeMY! 0.1
  */
 function thememy_restrict_download_page() {
+	if ( ! is_page( 'download' ) )
+		return;
+
 	$order = get_post( $_GET['order'] );
 	$access_key = $_GET['key'];
 
@@ -448,19 +436,4 @@ function thememy_restrict_download_page() {
 		wp_die( __( "You don't have the rights to access this resource." ) );
 }
 add_action( 'template_redirect', 'thememy_restrict_download_page' );
-
-/**
- * Display download instructions
- *
- * @since ThemeMY! 0.1
- */
-function thememy_download_instructions() {
-	ob_start();
-	get_template_part( 'content/download-instructions' );
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
-}
-add_shortcode( 'download-instructions', 'thememy_download_instructions' );
 

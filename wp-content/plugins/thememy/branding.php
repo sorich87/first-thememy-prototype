@@ -166,30 +166,22 @@ add_action( 'wp_enqueue_scripts', 'thememy_enqueue_bootstrap' );
  *
  * @since ThemeMY! 0.1
  */
-function thememy_features() {
+function thememy_content_shortcode( $atts ) {
+	extract( shortcode_atts( array(
+		'file' => '',
+	), $atts ) );
+
+	if ( ! $file )
+		return;
+
 	ob_start();
-	get_template_part( 'content/features' );
+	get_template_part( "content/$file" );
 	$content = ob_get_contents();
 	ob_end_clean();
 
 	return $content;
 }
-add_shortcode( 'features', 'thememy_features' );
-
-/**
- * Display feedback form shortcode content
- *
- * @since ThemeMY! 0.1
- */
-function thememy_feedback_form() {
-	ob_start();
-	get_template_part( 'content/feedback-form' );
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
-}
-add_shortcode( 'feedback-form', 'thememy_feedback_form' );
+add_shortcode( 'content', 'thememy_content_shortcode' );
 
 /**
  * Send feedback to site admin
@@ -217,21 +209,6 @@ function thememy_send_feedback() {
 	exit;
 }
 add_action( 'template_redirect', 'thememy_send_feedback' );
-
-/**
- * Display survey form
- *
- * @since ThemeMY! 0.1
- */
-function thememy_survey_form() {
-	ob_start();
-	get_template_part( 'content/survey-form' );
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
-}
-add_shortcode( 'survey-form', 'thememy_survey_form' );
 
 /**
  * Send survey answers to site admin

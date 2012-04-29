@@ -195,18 +195,3 @@ function thememy_restrict_admin() {
 }
 add_action( 'admin_init', 'thememy_restrict_admin' );
 
-/**
- * Display signup form
- *
- * @since ThemeMY! 0.1
- */
-function thememy_signup_form() {
-	ob_start();
-	get_template_part( 'content/signup-form' );
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
-}
-add_shortcode( 'signup-form', 'thememy_signup_form' );
-

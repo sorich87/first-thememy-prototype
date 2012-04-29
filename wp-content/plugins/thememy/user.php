@@ -35,7 +35,7 @@ function thememy_getting_started() {
  		|| get_post_type() == 'theme' || thememy_is_public_page()	)
 		return;
 
-	get_template_part( 'getting-started' );
+	get_template_part( 'content/getting-started' );
 }
 add_action( 'wp_footer', 'thememy_getting_started', 20 );
 

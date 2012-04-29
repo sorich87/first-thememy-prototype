@@ -177,33 +177,6 @@ add_filter( 'style_loader_tag', 'thememy_less_loader_tag', 10, 2 );
 //require( get_template_directory() . '/inc/custom-header.php' );
 
 /**
- * Send feedback to site admin
- *
- * @since ThemeMY! 0.1
- */
-function thememy_send_feedback() {
-	if ( ! is_page( 'feedback' ) || ! isset( $_POST['message'] ) )
-		return;
-
-	if ( empty( $_POST['message'] ) ) {
-		wp_redirect( site_url( 'feedback/?message=2' ) );
-		exit;
-	}
-
-	$current_user = wp_get_current_user();
-
-	$to = get_option( 'admin_email' );
-	$subject = sprintf( __( 'Feedback from %s' ), $current_user->display_name );
-	$message = $_POST['message'];
-
-	wp_mail( $to, $subject, $message );
-
-	wp_redirect( site_url( 'feedback/?message=1' ) );
-	exit;
-}
-add_action( 'template_redirect', 'thememy_send_feedback' );
-
-/**
  * Send survey answers to site admin
  *
  * @since ThemeMY! 0.1

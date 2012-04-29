@@ -430,3 +430,37 @@ function thememy_reports() {
 }
 add_shortcode( 'reports', 'thememy_reports' );
 
+/**
+ * Restrict access to download page
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_restrict_download_page() {
+	$order = get_post( $_GET['order'] );
+	$access_key = $_GET['key'];
+
+	if ( ! $order )
+		wp_die( __( 'Order not found' ) );
+
+	$buyer_email = get_post_meta( $order->ID, '_thememy_buyer', true );
+
+	if ( $access_key != wp_hash( $buyer_email ) )
+		wp_die( __( "You don't have the rights to access this resource." ) );
+}
+add_action( 'template_redirect', 'thememy_restrict_download_page' );
+
+/**
+ * Display download instructions
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_download_instructions() {
+	ob_start();
+	get_template_part( 'content/download-instructions' );
+	$content = ob_get_contents();
+	ob_end_clean();
+
+	return $content;
+}
+add_shortcode( 'download-instructions', 'thememy_download_instructions' );
+

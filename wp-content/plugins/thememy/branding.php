@@ -190,7 +190,7 @@ function thememy_features_shortcode() {
 		<p>
 			You don't need to build a website from scratch to start selling your themes.
 			Focus on what matter (designing your themes) by using the
-			pre-built landing pages with beautiful slideshows and social media integration.
+			pre-built responsive landing pages with beautiful slideshows and social media integration.
 		</p>
 	</div>
 	<div class="span4">
@@ -229,7 +229,7 @@ function thememy_features_shortcode() {
 		<h2>Automatic Updates</h2>
 		<p class="thumbnail"><img src="<?php echo get_template_directory_uri(); ?>/images/feature-update.png" /></p>
 		<p>
-			Give your clients the convenience of getting you themes updates
+			Give your clients the convenience of getting your themes updates
 			through their WordPress admin dashboard, the same way they get updates for
 			themes downloaded from wordpress.org.
 		</p>

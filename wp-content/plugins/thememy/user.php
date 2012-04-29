@@ -77,7 +77,20 @@ add_filter( 'show_admin_bar', 'thememy_admin_bar' );
  * @since ThemeMY! 0.1
  */
 function thememy_user_signup() {
-	if ( ! is_page( 'signup' ) || empty( $_POST ) )
+	if ( ! is_page( 'signup' ) )
+		return;
+
+	$get = stripslashes_deep( $_GET );
+	$access_key = isset( $get['key'] ) ? $get['key'] : '';
+	$user_email = isset( $get['user_email'] ) ? $get['user_email'] : '';
+
+	if ( get_user_by( 'email', $user_email ) )
+		wp_die( __( 'You, or someone else, already registered with this email.' ) );
+
+	if ( ! $user_email || ! $access_key || $access_key != wp_hash( $user_email ) )
+		wp_die( __( "You don't have the rights to access this resource." ) );
+			
+	if ( empty( $_POST ) )
 		return;
 
 	$data = stripslashes_deep( $_POST );
@@ -181,4 +194,19 @@ function thememy_restrict_admin() {
 	}
 }
 add_action( 'admin_init', 'thememy_restrict_admin' );
+
+/**
+ * Display signup form
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_signup_form() {
+	ob_start();
+	get_template_part( 'content/signup-form' );
+	$content = ob_get_contents();
+	ob_end_clean();
+
+	return $content;
+}
+add_shortcode( 'signup-form', 'thememy_signup_form' );
 

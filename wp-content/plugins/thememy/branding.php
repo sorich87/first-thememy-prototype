@@ -218,3 +218,48 @@ function thememy_send_feedback() {
 }
 add_action( 'template_redirect', 'thememy_send_feedback' );
 
+/**
+ * Display survey form
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_survey_form() {
+	ob_start();
+	get_template_part( 'content/survey-form' );
+	$content = ob_get_contents();
+	ob_end_clean();
+
+	return $content;
+}
+add_shortcode( 'survey-form', 'thememy_survey_form' );
+
+/**
+ * Send survey answers to site admin
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_send_survey() {
+	if ( ! is_page( 'survey' ) )
+		return;
+
+	$email = isset( $_GET['email'] ) ? stripslashes( $_GET['email'] ) : '';
+
+	if ( ! isset( $_GET['success'] ) && ! get_user_by( 'email', $email ) )
+		wp_die( __( "You don't have the rights to access this resource." ) );
+
+	if ( ! isset( $_POST['email'] ) )
+		return;
+
+	$post = stripslashes_deep( $_POST );
+
+	$to = get_option( 'admin_email' );
+	$subject = sprintf( __( 'Survey answers from %s' ), $post['email'] );
+	$message = json_encode( $post );
+
+	wp_mail( $to, $subject, $message );
+
+	wp_redirect( add_query_arg( 'success', 'true' ) );
+	exit;
+}
+add_action( 'template_redirect', 'thememy_send_survey' );
+

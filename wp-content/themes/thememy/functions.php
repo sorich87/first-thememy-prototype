@@ -177,28 +177,6 @@ add_filter( 'style_loader_tag', 'thememy_less_loader_tag', 10, 2 );
 //require( get_template_directory() . '/inc/custom-header.php' );
 
 /**
- * Send survey answers to site admin
- *
- * @since ThemeMY! 0.1
- */
-function thememy_send_survey() {
-	if ( ! is_page( 'survey' ) || ! isset( $_POST['email'] ) )
-		return;
-
-	$post = stripslashes_deep( $_POST );
-
-	$to = get_option( 'admin_email' );
-	$subject = sprintf( __( 'Survey answers from %s' ), $post['email'] );
-	$message = json_encode( $post );
-
-	wp_mail( $to, $subject, $message );
-
-	wp_redirect( add_query_arg( 'success', 'true' ) );
-	exit;
-}
-add_action( 'template_redirect', 'thememy_send_survey' );
-
-/**
  * Register log post type
  *
  * @since ThemeMY! 0.1

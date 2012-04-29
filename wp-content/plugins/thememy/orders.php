@@ -415,3 +415,18 @@ function thememy_display_meta_dump() {
 }
 add_action( 'dbx_post_sidebar', 'thememy_display_meta_dump' );
 
+/**
+ * Display reports
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_reports() {
+	ob_start();
+	get_template_part( 'content/reports' );
+	$content = ob_get_contents();
+	ob_end_clean();
+
+	return $content;
+}
+add_shortcode( 'reports', 'thememy_reports' );
+

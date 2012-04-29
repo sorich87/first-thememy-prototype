@@ -16,6 +16,7 @@
         <p>
           Copyright &copy; 2012
           <a href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php esc_attr_e( 'The easiest way to sell WordPress themes' ); ?>">ThemeMY!</a>
+					| <a href="<?php echo esc_url( site_url( 'features/' ) ); ?>" title="<?php esc_attr_e( 'ThemeMY! features' ); ?>"><?php _e( 'Features' ); ?></a>
         </p>
       </footer>
 

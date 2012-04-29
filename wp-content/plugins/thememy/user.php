@@ -1,6 +1,30 @@
 <?php
 
 /**
+ * Return list of pages accessible by non logged-in users
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_get_public_pages() {
+	return array(
+		'api', 'download', 'features',
+		'ipn', 'order-cancelled', 'order-confirmation',
+		'signup', 'survey'
+	);
+}
+
+/**
+ * Check if current page is a public one
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_is_public_page() {
+	global $post;
+
+	return in_array( $post->post_name, thememy_get_public_pages() );
+}
+
+/**
  * Add Getting Started modal
  *
  * @since ThemeMY! 0.1
@@ -8,7 +32,7 @@
 function thememy_getting_started() {
 	if ( ! is_user_logged_in() || ! empty( $_GET )
 		|| get_user_option( 'thememy_show_getting_started', get_current_user_id() ) == 'no'
- 		|| get_post_type() == 'theme'	)
+ 		|| get_post_type() == 'theme' || thememy_is_public_page()	)
 		return;
 
 	get_template_part( 'getting-started' );
@@ -124,6 +148,8 @@ add_filter( 'authenticate', 'thememy_authenticate', 20, 3 );
  * @since ThemeMY! 0.1
  */
 function thememy_restrict_pages() {
+	global $post;
+
 	if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
 		if ( ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) )
 	 		|| is_page_template( 'signup-page.php' )	) {
@@ -132,9 +158,7 @@ function thememy_restrict_pages() {
 		}
 
 	} elseif ( ! is_404() ) {
-		if ( ! is_front_page() && ! is_page_template( 'store-page.php' ) && ! is_page_template( 'survey-page.php' )
-			&& ! is_page_template( 'download-page.php' ) && ! is_page_template( 'signup-page.php' )
-			&& ! is_page( 'api' ) && ! is_page( 'ipn' ) ) {
+		if ( ! is_front_page() && ! thememy_is_public_page() ) {
 			wp_redirect( home_url( '/' ) );
 			exit;
 		}

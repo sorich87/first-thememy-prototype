@@ -46,7 +46,7 @@
 
 		<?php do_action( 'before' ); ?>
 
-		<?php if ( is_front_page() || is_user_logged_in() || is_page_template( 'page-with-navbar.php' ) ) : ?>
+		<?php if ( is_front_page() || is_user_logged_in() ) : ?>
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">

@@ -117,7 +117,7 @@ function thememy_scripts() {
 	wp_enqueue_script( 'bootstrap-button' );
 	wp_enqueue_script( 'bootstrap-collapse' );
 
-	if ( is_page_template( 'settings.php' ) ) {
+	if ( is_page( 'settings' ) ) {
 		wp_enqueue_script( 'bootstrap-modal' );
 		wp_enqueue_script( 'bootstrap-tab' );
 	}
@@ -137,7 +137,7 @@ function thememy_scripts() {
 		) );
 	}
 
-	if ( is_page_template( 'reports.php' ) )
+	if ( is_page( 'reports' ) )
 		wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) )
@@ -182,7 +182,7 @@ add_filter( 'style_loader_tag', 'thememy_less_loader_tag', 10, 2 );
  * @since ThemeMY! 0.1
  */
 function thememy_send_survey() {
-	if ( ! is_page_template( 'survey-page.php' ) || ! isset( $_POST['email'] ) )
+	if ( ! is_page( 'survey' ) || ! isset( $_POST['email'] ) )
 		return;
 
 	$post = stripslashes_deep( $_POST );
@@ -245,7 +245,7 @@ function thememy_error( $data, $die = true ) {
  * @since ThemeMY! 0.1
  */
 function thememy_install_request() {
-	if ( ! is_page_template( 'download-page.php' ) || empty( $_POST ) )
+	if ( ! is_page( 'download' ) || empty( $_POST ) )
 		return;
 
 	$to = get_option( 'admin_email' );

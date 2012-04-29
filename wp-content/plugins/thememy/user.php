@@ -77,7 +77,7 @@ add_filter( 'show_admin_bar', 'thememy_admin_bar' );
  * @since ThemeMY! 0.1
  */
 function thememy_user_signup() {
-	if ( ! is_page_template( 'signup-page.php' ) || empty( $_POST ) )
+	if ( ! is_page( 'signup' ) || empty( $_POST ) )
 		return;
 
 	$data = stripslashes_deep( $_POST );
@@ -152,7 +152,7 @@ function thememy_restrict_pages() {
 
 	if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
 		if ( ( is_front_page() && empty( $_GET['buy'] ) && empty( $_GET['buy-all'] ) )
-	 		|| is_page_template( 'signup-page.php' )	) {
+	 		|| is_page( 'signup' )	) {
 			wp_redirect( site_url( 'themes/' ) );
 			exit;
 		}

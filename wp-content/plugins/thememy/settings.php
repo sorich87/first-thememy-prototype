@@ -6,7 +6,7 @@
  * @since ThemeMY! 0.1
  */
 function thememy_delete_account_modal() {
-	if ( ! is_user_logged_in() || ! is_page_template( 'settings.php' ) )
+	if ( ! is_user_logged_in() || ! is_page( 'settings' ) )
 		return;
 ?>
 <div class="modal hide alert-error" id="delete-account">
@@ -49,7 +49,7 @@ add_action( 'wp_footer', 'thememy_delete_account_modal', 20 );
  * @since ThemeMY! 0.1
  */
 function thememy_save_settings() {
-	if ( ! is_page_template( 'settings.php' ) || empty( $_POST ) )
+	if ( ! is_page( 'settings' ) || empty( $_POST ) )
 		return;
 
 	$data = stripslashes_deep( $_POST );

@@ -38,11 +38,8 @@ add_action( 'wp_head', 'thememy_facebook_meta' );
  * @since ThemeMY! 0.1
  */
 function thememy_robots_meta() {
-	if ( ! is_page_template( 'store-page.php' ) )
-		return;
-?>
-<meta name="robots" content="noindex, nofollow" />
-<?php
+	if ( is_page() && ! is_page( 'features' ) )
+		echo "<meta name='robots' content='noindex, nofollow' />\n";
 }
 add_action( 'wp_head', 'thememy_robots_meta' );
 

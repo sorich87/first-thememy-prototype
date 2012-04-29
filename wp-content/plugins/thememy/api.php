@@ -37,8 +37,11 @@ function thememy_api_theme_details( $theme_id ) {
  * @since ThemeMY! 0.1
  */
 function thememy_process_api_requests() {
-	if ( ! get_query_var( 'api' ) || empty( $_REQUEST['action'] ) )
+	if ( ! get_query_var( 'api' ) )
 		return;
+	
+	if ( empty( $_REQUEST['action'] ) )
+		exit;
 
 	$request = stripslashes_deep( $_REQUEST );
 

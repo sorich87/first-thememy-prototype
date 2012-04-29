@@ -265,19 +265,22 @@ function thememy_decode_ipn( $raw_post ) {
  * @since ThemeMY! 0.1
  */
 function thememy_process_order() {
-	if ( ! is_page( 'ipn' ) || empty( $_POST ) )
+	if ( ! get_query_var( 'ipn' ) )
 		return;
+	
+	if ( empty( $_POST ) )
+		exit;
 
 	$raw_post = file_get_contents( 'php://input' );
 	$data = thememy_decode_ipn( $raw_post );
 
 	if ( 'Adaptive Payment PAY' != $data['transaction_type'] || 'COMPLETED' != $data['status'] )
-		return;
+		exit;
 
 	// Check that the order has not yet been processed
 	$order = thememy_get_order( $data['trackingId'] );
 	if ( $order )
-		return;
+		exit;
 
 	// Add 'cmd' and post back to PayPal to validate
 
@@ -295,7 +298,7 @@ function thememy_process_order() {
 
 	if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 		thememy_error( $response, false );
-		return;
+		exit;
 	}
 
 	$result = wp_remote_retrieve_body( $response );

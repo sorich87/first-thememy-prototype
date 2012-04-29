@@ -343,6 +343,7 @@ function thememy_add_rewrites() {
 	add_rewrite_endpoint( 'edit', EP_PERMALINK );
 
 	add_rewrite_rule( 'api/?$', 'index.php?api=true', 'top' );
+	add_rewrite_rule( 'ipn/?$', 'index.php?ipn=true', 'top' );
 }
 add_action( 'init', 'thememy_add_rewrites' );
 
@@ -371,9 +372,7 @@ add_filter( 'request', 'thememy_request' );
  * @since ThemeMY! 0.1
  */
 function thememy_query_vars( $query_vars ) {
-	$query_vars[] = 'api';
-
-	return $query_vars;
+	return array_merge( $query_vars, array( 'api', 'ipn' ) );
 }
 add_filter( 'query_vars', 'thememy_query_vars' );
 

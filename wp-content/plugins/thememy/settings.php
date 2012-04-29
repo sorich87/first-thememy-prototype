@@ -112,3 +112,39 @@ function thememy_get_settings( $author_id = null ) {
 	return get_user_meta( $author_id, '_thememy_settings', true );
 }
 
+/**
+ * Display settings form
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_settings_form() {
+	ob_start();
+	get_template_part( 'content/settings-form' );
+	$content = ob_get_contents();
+	ob_end_clean();
+
+	return $content;
+}
+add_shortcode( 'settings-form', 'thememy_settings_form' );
+
+/**
+ * Process settings shortcode
+ *
+ * @since ThemeMY! 0.1
+ */
+function thememy_setting_shortcode( $atts ) {
+	extract( shortcode_atts( array(
+		'name' => ''
+	), $atts ) );
+
+	if ( empty( $_GET['store'] ) )
+		return "[$name]";
+
+	$settings = thememy_get_settings( $_GET['store'] );
+
+	if ( isset( $settings[$name] ) )
+		return $settings[$name];
+}
+
+add_shortcode( 'setting', 'thememy_setting_shortcode' );
+

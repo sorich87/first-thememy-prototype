@@ -182,18 +182,3 @@ function thememy_restrict_admin() {
 }
 add_action( 'admin_init', 'thememy_restrict_admin' );
 
-/**
- * Display settings form
- *
- * @since ThemeMY! 0.1
- */
-function thememy_settings_form() {
-	ob_start();
-	get_template_part( 'content/settings-form' );
-	$content = ob_get_contents();
-	ob_end_clean();
-
-	return $content;
-}
-add_shortcode( 'settings-form', 'thememy_settings_form' );
-
